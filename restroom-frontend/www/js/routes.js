@@ -20,12 +20,12 @@ angular.module('app.routes', [])
     }
   })
 
-  .state('tabsController.page3', {
+  .state('tabsController.about', {
     url: '/about',
     views: {
       'tab3': {
-        templateUrl: 'templates/page3.html',
-        controller: 'page3Ctrl'
+        templateUrl: 'templates/about.html',
+        controller: 'aboutCtrl'
       }
     }
   })

@@ -2,7 +2,7 @@
   <ion-content ng-controller="labCtrl" padding="true" class="has-header">
     <ion-list id="page4-list7" class=" ">
       <ion-item ng-repeat="member in members" class="item-thumbnail-left">
-        <img src="img/{{member.img}}">
+        <img ng-src="img/{{member.img}}">
         <h2>{{member.name}}</h2>
         <p>{{member.role}}</p>
       </ion-item>
