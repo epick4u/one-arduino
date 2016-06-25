@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
 
 })
 
-.controller('page3Ctrl', function($scope) {
+.controller('aboutCtrl', function($scope) {
 
 })
 
