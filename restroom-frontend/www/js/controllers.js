@@ -22,10 +22,16 @@ angular.module('app.controllers', [])
   $scope.members = members;
 })
 
-.controller('page5Ctrl', function($scope) {
-
+.controller('loginCtrl', function($scope) {
+  $scope.user = {};
+  $scope.login = function() {
+    if ($scope.user.username === 'arduino.onelab' && $scope.user.password === 'Arduino12#$') {
+      alert('Login success!');
+    } else {
+      alert('login failure!');
+    }
+  };
 })
 
 .controller('page6Ctrl', function($scope) {
-
 })

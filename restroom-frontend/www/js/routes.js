@@ -46,10 +46,10 @@ angular.module('app.routes', [])
     abstract:true
   })
 
-  .state('page5', {
+  .state('login', {
     url: '/login',
-    templateUrl: 'templates/page5.html',
-    controller: 'page5Ctrl'
+    templateUrl: 'templates/login.html',
+    controller: 'loginCtrl'
   })
 
   .state('page6', {
