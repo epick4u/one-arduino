@@ -1,7 +1,11 @@
 angular.module('app.controllers', [])
 
-.controller('page9Ctrl', function($scope) {
-
+.controller('mainCtrl', function($http, $scope) {
+  $scope.restrooms = [
+    {id: '11-1', occupied: true, startTime: '1466911339'},
+    {id: '11-2', occupied: false, startTime: '1466911410'},
+    {id: '11-3', occupied: true, startTime: '1466911555'}
+  ];
 })
 
 .controller('aboutCtrl', function($scope) {

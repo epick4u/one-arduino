@@ -10,12 +10,12 @@ angular.module('app.routes', [])
 
 
 
-      .state('tabsController.page9', {
+      .state('tabsController.main', {
     url: '/restroom',
     views: {
       'tab1': {
-        templateUrl: 'templates/page9.html',
-        controller: 'page9Ctrl'
+        templateUrl: 'templates/main.html',
+        controller: 'mainCtrl'
       }
     }
   })
