@@ -8,16 +8,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class MainController implements InitializingBean {
 	
 	private Map<String, RoomVO> roomMap;
- 
+
     @RequestMapping(value="/restroom", method=RequestMethod.GET)
     public @ResponseBody Collection<RoomVO> selectList() {
         return roomMap.values();
     }
-    @RequestMapping(value="/restroom/{roomId}", method=RequestMethod.GET)
+
+	@RequestMapping(value="/restroom/{roomId}", method=RequestMethod.GET)
     public @ResponseBody RoomVO select(@PathVariable String roomId) {
         return roomMap.get(roomId);
     }
@@ -53,7 +55,7 @@ public class MainController implements InitializingBean {
     	
     	roomMap.put(roomId, room);
     }
-    
+
     @RequestMapping(value="/restroom/{roomId}", method = RequestMethod.DELETE)
     @ResponseBody
     public void delete(@PathVariable String roomId) {
