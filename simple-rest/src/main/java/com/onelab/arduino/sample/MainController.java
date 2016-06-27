@@ -21,7 +21,25 @@ public class MainController implements InitializingBean {
     public @ResponseBody RoomVO select(@PathVariable String roomId) {
         return roomMap.get(roomId);
     }
-    
+
+	@RequestMapping(value="/restroom/{roomId}/{operation}", method=RequestMethod.GET)
+	@ResponseBody
+	public void inOrOut(@PathVariable String roomId, @PathVariable String operation) {
+		if (roomId == null && roomMap.containsKey(roomId)) {
+			System.out.println(roomId + "doesn't exist.!");
+			return;
+		}
+
+		RoomVO restroom = roomMap.get(roomId);
+		if ("in".equals(operation)) {
+			restroom.setOccupied(true);
+			restroom.setStartTime(new Date());
+		} else {
+			restroom.setOccupied(false);
+			restroom.setStartTime(null);
+		}
+	}
+
     @RequestMapping(value="/restroom/{roomId}", method=RequestMethod.POST)
     @ResponseBody
     public void update(@PathVariable String roomId) {
@@ -60,6 +78,7 @@ public class MainController implements InitializingBean {
 			restRoom.setId(restroomId);
 			if (i % 2 == 0) {
 				restRoom.setStartTime(new Date());
+				restRoom.setOccupied(true);
 			}
 			roomMap.put(restroomId, restRoom);
 		}

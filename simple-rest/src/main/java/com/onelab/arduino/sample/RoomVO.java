@@ -6,6 +6,7 @@ public class RoomVO {
 	
 	private String id;
 	private Date startTime;
+	private boolean occupied;
 	
 	public String getId() {
 		return id;
@@ -18,5 +19,13 @@ public class RoomVO {
 	}
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
+	}
+
+	public boolean isOccupied() {
+		return occupied;
+	}
+
+	public void setOccupied(boolean occupied) {
+		this.occupied = occupied;
 	}
 }
