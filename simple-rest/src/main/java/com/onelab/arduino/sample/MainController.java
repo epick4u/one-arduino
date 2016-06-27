@@ -17,7 +17,6 @@ public class MainController implements InitializingBean {
     public @ResponseBody Collection<RoomVO> selectList() {
         return roomMap.values();
     }
-    
     @RequestMapping(value="/restroom/{roomId}", method=RequestMethod.GET)
     public @ResponseBody RoomVO select(@PathVariable String roomId) {
         return roomMap.get(roomId);
@@ -50,6 +49,7 @@ public class MainController implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		roomMap = new HashMap<String, RoomVO>();
+
 		// Load temporary data to the hash map until we have database set up.
 		for (int i = 0; i < 12; i++) {
 			int floorNo = i / 3 + 10;
