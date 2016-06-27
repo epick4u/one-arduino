@@ -1,17 +1,12 @@
 package com.onelab.arduino.sample;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MainController implements InitializingBean {
@@ -19,8 +14,8 @@ public class MainController implements InitializingBean {
 	private Map<String, RoomVO> roomMap;
  
     @RequestMapping(value="/restroom", method=RequestMethod.GET)
-    public @ResponseBody Set<Entry<String, RoomVO>> selectList() {
-        return roomMap.entrySet();
+    public @ResponseBody Collection<RoomVO> selectList() {
+        return roomMap.values();
     }
     
     @RequestMapping(value="/restroom/{roomId}", method=RequestMethod.GET)
@@ -55,5 +50,19 @@ public class MainController implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		roomMap = new HashMap<String, RoomVO>();
+		// Load temporary data to the hash map until we have database set up.
+		for (int i = 0; i < 12; i++) {
+			int floorNo = i / 3 + 10;
+			int roomNo = i % 3 + 1;
+			String restroomId = floorNo + "-" + roomNo;
+
+			RoomVO restRoom = new RoomVO();
+			restRoom.setId(restroomId);
+			if (i % 2 == 0) {
+				restRoom.setStartTime(new Date());
+			}
+			roomMap.put(restroomId, restRoom);
+		}
 	}
+
 }
