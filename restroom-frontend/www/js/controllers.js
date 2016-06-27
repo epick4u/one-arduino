@@ -6,8 +6,23 @@ angular.module('app.controllers', [])
 
   $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
     .success(function(data) {
-      console.log('data ', data);
-      $scope.restrooms = data.sort();
+      var sorted = data.sort(function(a, b) {
+        if (a.id < b.id) {
+          return -1;
+        }
+        if (a.id > b.id) {
+          return 1;
+        }
+        return 0;
+      });
+
+      for (var i in sorted) {
+          console.log('- restroom : ', sorted[i].id);
+      }
+
+      $scope.restrooms = data.sort(function(a, b) {
+        return a.id < b.id;
+      });
     })
     .error(function(data, status, headers) {
       alert('Repos status ' + status + ' --- headers : ' + headers);
