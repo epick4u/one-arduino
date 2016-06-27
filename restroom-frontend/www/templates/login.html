@@ -1,0 +1,19 @@
+<ion-view title="로그인" id="login" class=" ">
+    <ion-content padding="true" class="has-header">
+        <form id="loginForm" name="loginForm" ng-controller="loginCtrl" ng-submit="login()" class="list" novalidate>
+            <ion-list id="login-list2" class=" ">
+                <label class="item item-input " id="login-input1">
+                    <span class="input-label">Username</span>
+                    <input ng-model="user.username" name="username" type="text" placeholder="" required>
+                </label>
+                <label class="item item-input " id="login-input2">
+                    <span class="input-label">Password</span>
+                    <input ng-model="user.password" name="password" type="password" placeholder="" required>
+                </label>
+            </ion-list>
+            <div class="spacer" style="height: 40px;"></div>
+            <input type="submit" class= "button button-stable button-block" value="Log in">
+            <!--a href="#" onclick="window.open('/signup', '_system', 'location=yes'); return false;" id="login-button2" class=" button button-positive  button-block button-clear ">Or create an account</a-->
+        </form>
+    </ion-content>
+</ion-view>
