@@ -4,7 +4,7 @@ angular.module('app.controllers', [])
   console.log('mainCtrl called.');
   var restrooms = [];
 
-  $http.get('http://localhost:8080/restroom')
+  $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
     .success(function(data) {
       console.log('data ', data);
       $scope.restrooms = data.sort();
