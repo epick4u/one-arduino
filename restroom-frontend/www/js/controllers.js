@@ -1,11 +1,17 @@
 angular.module('app.controllers', [])
 
-.controller('mainCtrl', function($http, $scope) {
-  $scope.restrooms = [
-    {id: '11-1', occupied: true, startTime: '1466911339'},
-    {id: '11-2', occupied: false, startTime: '1466911410'},
-    {id: '11-3', occupied: true, startTime: '1466911555'}
-  ];
+.controller('mainCtrl', function($scope, $http) {
+  console.log('mainCtrl called.');
+  var restrooms = [];
+
+  $http.get('http://localhost:8080/restroom')
+    .success(function(data) {
+      console.log('data ', data);
+      $scope.restrooms = data.sort();
+    })
+    .error(function(data, status, headers) {
+      alert('Repos status ' + status + ' --- headers : ' + headers);
+    });
 })
 
 .controller('aboutCtrl', function($scope) {
