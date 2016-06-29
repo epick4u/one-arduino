@@ -1,32 +1,37 @@
 angular.module('app.controllers', [])
 
 .controller('mainCtrl', function($scope, $http) {
-  console.log('mainCtrl called.');
+  console.log('Calling mainCtrl');
   var restrooms = [];
 
   $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
     .success(function(data) {
-      var sorted = data.sort(function(a, b) {
-        if (a.id < b.id) {
+      $scope.restrooms = data.sort(function(a, b) {
+        if (a.id > b.id) {
           return -1;
         }
-        if (a.id > b.id) {
+        if (a.id < b.id) {
           return 1;
         }
         return 0;
-      });
-
-      for (var i in sorted) {
-          console.log('- restroom : ', sorted[i].id);
-      }
-
-      $scope.restrooms = data.sort(function(a, b) {
-        return a.id < b.id;
-      });
+      });;
     })
     .error(function(data, status, headers) {
       alert('Repos status ' + status + ' --- headers : ' + headers);
     });
+
+  $scope.list = function() {
+    console.log("Calling mainCtrl#list")
+    $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
+      .success(function(data) {
+        $scope.restrooms = data.filter(function(restroom) {
+          return restroom.id.split('-')[0] == $scope.floor;
+        });
+      })
+      .error(function(data, status, headers) {
+        alert('Repos status ' + status + ' --- headers : ' + headers);
+      });
+  }
 })
 
 .controller('aboutCtrl', function($scope) {
