@@ -2,6 +2,56 @@ angular.module('app.controllers', [])
 
 .controller('mainCtrl', function($scope, mainSvc, $http) {
   console.log('Calling mainCtrl');
+  $scope.floors = [{
+    id: 13,
+    restrooms: [{
+      id: "13-1",
+      startTime: null,
+      occupied: false
+    }, {
+      id: "13-2",
+      startTime: 1467210694777,
+      occupied: true
+    }, {
+      id: "13-3",
+      startTime: false,
+      occupied: null
+    }]
+  }, {
+    id: 12,
+    restrooms: [{
+      id: "12-1",
+      startTime: null,
+      occupied: false
+    }, {
+      id: "12-2",
+      startTime: 1467210694777,
+      occupied: true
+    }, {
+      id: "12-3",
+      startTime: false,
+      occupied: null
+    }]
+  }, {
+    id: 11,
+    restrooms: [{
+      id: "12-1",
+      startTime: null,
+      occupied: false
+    }, {
+      id: "12-2",
+      startTime: 1467210694777,
+      occupied: true
+    }, {
+      id: "12-3",
+      startTime: false,
+      occupied: null
+    }]
+  }];
+})
+
+.controller('settingsCtrl', function($scope, mainSvc, $http) {
+  console.log('Calling settingsCtrl');
   var restrooms = [];
 
   $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
@@ -21,7 +71,7 @@ angular.module('app.controllers', [])
     });
 
   $scope.list = function() {
-    console.log("Calling mainCtrl#list");
+    console.log("Calling settingsCtrl#list");
     $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
       .success(function(data) {
         $scope.restrooms = data.filter(function(restroom) {
@@ -45,7 +95,7 @@ angular.module('app.controllers', [])
   }
 
   $scope.update = function(id, restroom) {
-    console.log('Calling mainCtrl#update');
+    console.log('Calling settingsCtrl#update');
     mainSvc.update(id, restroom);
     $scope.list();
   }
@@ -81,4 +131,4 @@ angular.module('app.controllers', [])
 })
 
 .controller('page6Ctrl', function($scope) {
-})
+});
