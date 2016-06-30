@@ -47,6 +47,7 @@ angular.module('app.controllers', [])
   $scope.update = function(id, restroom) {
     console.log('Calling mainCtrl#update');
     mainSvc.update(id, restroom);
+    $scope.list();
   }
 })
 
