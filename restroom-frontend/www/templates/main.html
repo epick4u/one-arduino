@@ -1,22 +1,21 @@
 <ion-view title="화장실 사용 현황" id="main" class=" ">
     <ion-content ng-controller="mainCtrl" padding="true" class="has-header">
-        <div class="item item-body " id="main-list-item-container2">
-          <p style="margin-top:0px;color:#000000;" class=" ">
-            층을 선택하시면 화장실 사용 현황을 나옵니다.<br>
-          </p>
-        </div>
         <ion-list id="main-list5" class=" ">
             <label class="item item-select " id="main-select2" name="floor">
-                <span class="input-label">Floor</span>
-                <select>
-                    <option>13층</option>
-                    <option>12층</option>
-                    <option>11층</option>
-                    <option>10층</option>
+                <span class="input-label">층을 선택하세요.</span>
+                <select ng-model="floor" ng-change="list()">
+                    <option value="">ALL</option>
+                    <option value="13">13</option>
+                    <option value="12">12</option>
+                    <option value="11">11</option>
+                    <option value="10">10</option>
                 </select>
             </label>
-            <ion-item class="item-divider " id="main-list-item-divider2">11층</ion-item>
-            <ion-toggle ng-repeat="restroom in restrooms" ng-checked="restroom.occupied" ng-disabled="true" toggle-class="toggle-positive">Room #{{restroom.id}}</ion-toggle>
+            <ion-item class="item-divider " id="main-list-item-divider2">Floor #{{floor}}</ion-item>
+            <ion-toggle ng-repeat="restroom in restrooms" ng-model="restroom.occupied"
+              ng-change="update(restroom.id, restroom)" toggle-class="toggle-positive"
+              >Room #{{restroom.id}} (입장 시간 : {{(restroom.startTime | date:'yyyy-MM-dd HH:mm:ss') || "N/A"}})</ion-toggle>
+            <button class="button button-block button-positive" ng-click="list()">새로 고침</button>
         </ion-list>
     </ion-content>
 </ion-view>
