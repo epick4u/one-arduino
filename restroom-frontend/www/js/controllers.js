@@ -1,69 +1,24 @@
 angular.module('app.controllers', [])
 
-.controller('mainCtrl', function($scope, $http) {
-  console.log('Calling mainCtrl');
-  $scope.floors = [{
-    id: 13,
-    restrooms: [{
-      id: "13-1",
-      startTime: null,
-      occupied: false
-    }, {
-      id: "13-2",
-      startTime: 1467210694777,
-      occupied: true
-    }, {
-      id: "13-3",
-      startTime: false,
-      occupied: null
-    }]
-  }, {
-    id: 12,
-    restrooms: [{
-      id: "12-1",
-      startTime: null,
-      occupied: false
-    }, {
-      id: "12-2",
-      startTime: 1467210694777,
-      occupied: true
-    }, {
-      id: "12-3",
-      startTime: false,
-      occupied: null
-    }]
-  }, {
-    id: 11,
-    restrooms: [{
-      id: "12-1",
-      startTime: null,
-      occupied: false
-    }, {
-      id: "12-2",
-      startTime: 1467210694777,
-      occupied: true
-    }, {
-      id: "12-3",
-      startTime: false,
-      occupied: null
-    }]
-  }];
+.controller('mainCtrl', function($scope, MainSvc, $log) {
+  $log.info('> MainCtrl');
+  MainSvc.list().
+    then((result) => {
+      $log.debug(result);
+      $scope.floors = result.data;
+    });
 })
 
 .controller('settingsCtrl', function($scope, SettingsSvc, $log) {
   $log.info('Calling settingsCtrl');
-  
+
   SettingsSvc.list().
-    then(function(data) {
-      $scope.restrooms = data;
-    });
+    then((data) => $scope.restrooms = data);
 
   $scope.list = function() {
     $log.info("Calling settingsCtrl#list");
     SettingsSvc.list($scope.floor).
-      then(function(data) {
-        $scope.restrooms = data;
-      });
+      then((data) => $scope.restrooms = data);
   };
 
   $scope.update = function(id, restroom) {

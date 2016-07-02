@@ -68,6 +68,6 @@ angular.module('app.routes', [])
 
     $urlRouterProvider.otherwise('/page1/restroom')
 
-
+    // $httpProvider.interceptors.push('LoadingInterceptor');
 
   });
