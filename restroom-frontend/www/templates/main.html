@@ -1,14 +1,14 @@
 <ion-view title="화장실 사용 현황" id="main" class=" ">
-    <ion-content ng-controller="mainCtrl" padding="true" class="has-header">
+    <ion-content padding="true" class="has-header">
       <ion-list>
-        <ion-item ng-repeat="floor in floors">
+        <ion-item ng-repeat="floor in main.floors">
           <div class="row">
-            {{floor.id}} 층
+            {{floor}} 층
           </div>
           <div class="row">
-            <div class="col" ng-repeat="restroom in floor.restrooms">
-              <button ng-show="restroom.occupied" class="button button-block button-assertive">Busy</button>
-              <button ng-hide="restroom.occupied" class="button button-block button-balanced">Empty</button>
+            <div class="col" ng-repeat="restroom in main.restrooms | filter: {id:floor}">
+              <button ng-show="restroom.occupied" class="button button-block button-assertive">{{restroom.id}} : Busy</button>
+              <button ng-hide="restroom.occupied" class="button button-block button-balanced">{{restroom.id}} : Empty</button>
             </div>
           </div>
         </ion-item>

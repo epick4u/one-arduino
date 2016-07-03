@@ -1,54 +1,8 @@
 const baseUrl = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom";
-var restroomArray = [{
-  id: 13,
-  restrooms: [{
-    id: "13-1",
-    startTime: null,
-    occupied: false
-  }, {
-    id: "13-2",
-    startTime: 1467210694777,
-    occupied: true
-  }, {
-    id: "13-3",
-    startTime: false,
-    occupied: null
-  }]
-}, {
-  id: 12,
-  restrooms: [{
-    id: "12-1",
-    startTime: null,
-    occupied: false
-  }, {
-    id: "12-2",
-    startTime: 1467210694777,
-    occupied: true
-  }, {
-    id: "12-3",
-    startTime: false,
-    occupied: null
-  }]
-}, {
-  id: 11,
-  restrooms: [{
-    id: "12-1",
-    startTime: null,
-    occupied: false
-  }, {
-    id: "12-2",
-    startTime: 1467210694777,
-    occupied: true
-  }, {
-    id: "12-3",
-    startTime: false,
-    occupied: null
-  }]
-}];
 
-angular.module('app.services', [])
+var module = angular.module('app.services', []);
 
-.service('MainSvc', function($http, $log) {
+module.service('MainSvc', function($http, $log) {
   var svc = this;
 
   svc.list = function() {
@@ -57,15 +11,15 @@ angular.module('app.services', [])
     return $http.get(baseUrl)
       .then(function(result) {
         $log.debug(result);
-        result.data = restroomArray;
+        // result.data = restroomArray;
         // Transfer the given object instead of faking data
         return result;
       });
   };
 
-})
+});
 
-.service('SettingsSvc', function($http, $log) {
+module.service('SettingsSvc', function($http, $log) {
   var mainSvc = this;
 
   mainSvc.update = function(id, restroom) {
@@ -105,6 +59,7 @@ angular.module('app.services', [])
 
 });
 
+module.value('FLOORS', [13, 12, 11]);
 /*
 .factory('LoadingInterceptor', function (LoadingService, $log) {
     $log.debug('LoadingInterceptor');

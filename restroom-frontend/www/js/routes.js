@@ -15,7 +15,8 @@ angular.module('app.routes', [])
         views: {
           'tab1': {
             templateUrl: 'templates/main.html',
-            controller: 'mainCtrl'
+            controller: 'mainCtrl',
+            controllerAs: 'main'
           }
         }
       })
