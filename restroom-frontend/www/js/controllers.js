@@ -11,6 +11,14 @@ module.controller('mainCtrl', function(MainSvc, FLOORS, $log) {
       $log.debug(result);
       main.restrooms = result.data;
     });
+
+  main.list = function() {
+    MainSvc.list().
+      then((result) => {
+        $log.debug(result);
+        main.restrooms = result.data;
+      });
+  }
 });
 
 module.controller('settingsCtrl', function($scope, SettingsSvc, $log) {
