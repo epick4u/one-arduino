@@ -1,14 +1,32 @@
 const baseUrl = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom";
 
-angular.module('app.services', [])
+var module = angular.module('app.services', []);
 
-.service('mainSvc', function($q, $http) {
-  this.update = function(id, restroom) {
-    console.log('>> Calling mainSvc#update');
+module.service('MainSvc', function($http, $log) {
+  var svc = this;
+
+  svc.list = function() {
+    $log.info('>> MainSvc#list');
+
+    return $http.get(baseUrl)
+      .then(function(result) {
+        $log.debug(result);
+        // result.data = restroomArray;
+        // Transfer the given object instead of faking data
+        return result;
+      });
+  };
+
+});
+
+module.service('SettingsSvc', function($http, $log) {
+  var mainSvc = this;
+
+  mainSvc.update = function(id, restroom) {
+    $log.info('>> SettingsSvc#update');
 
     var action = restroom.occupied ? 'in' : 'out';
     var url = baseUrl + '/' + id + '/' + action;
-    console.log(url);
 
     $http.get(url).success(function(data) {
     }).error(function(data, status, headers) {
@@ -17,32 +35,53 @@ angular.module('app.services', [])
   };
 
   // TODO Doesn' work because of async
-  this.list = function(floor) {
-    console.log('>> Calling mainSvc#list');
+  mainSvc.list = function(floor) {
+    $log.info('>> SettingsSvcc#list');
 
-    var restrooms = [];
-    var deferred = $q.defer();
-    $http.get(baseUrl).success(function(data) {
-      restrooms = data.filter(function(restroom) {
-        if (!floor) {
-          return true;
-        }
-        return restroom.id.split('-')[0] == floor;
-      }).sort(function(a, b) {
-        if (a.id > b.id) {
-          return 1;
-        }
-        if (a.id < b.id) {
-          return -1;
-        }
-        return 0;
+    return $http.get(baseUrl)
+      .then(function(result) {
+        return result.data.filter(function(restroom) {
+          if (!floor) {
+            return true;
+          }
+          return restroom.id.split('-')[0] == floor;
+        }).sort(function(a, b) {
+          if (a.id > b.id) {
+            return 1;
+          }
+          if (a.id < b.id) {
+            return -1;
+          }
+          return 0;
+        });
       });
-      deferred.resolve(data);
-    }).error(function(data, status, headers) {
-      alert('Repos status ' + status + ' --- headers : ' + headers);
-    });
-
-    return restrooms;
   };
 
 });
+
+module.value('FLOORS', [13, 12, 11]);
+/*
+.factory('LoadingInterceptor', function (LoadingService, $log) {
+    $log.debug('LoadingInterceptor');
+    var loadingInterceptor = {
+        request: function (request) {
+            LoadingService.setLoading(true);
+            return request;
+        },
+        response: function (response) {
+            LoadingService.setLoading(false);
+            return response;
+        }
+    };
+    return loadingInterceptor;
+})
+
+.service('LoadingService', function ($rootScope, $log) {
+    $log.debug('LoadingService');
+    var service = this;
+
+    service.setLoading = function(loading) {
+        $rootScope.loading = true;
+    };
+});
+*/

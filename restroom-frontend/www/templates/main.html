@@ -1,21 +1,22 @@
-<ion-view title="화장실 사용 현황" id="main" class=" ">
-    <ion-content ng-controller="mainCtrl" padding="true" class="has-header">
-        <ion-list id="main-list5" class=" ">
-            <label class="item item-select " id="main-select2" name="floor">
-                <span class="input-label">층을 선택하세요.</span>
-                <select ng-model="floor" ng-change="list()">
-                    <option value="">ALL</option>
-                    <option value="13">13</option>
-                    <option value="12">12</option>
-                    <option value="11">11</option>
-                    <option value="10">10</option>
-                </select>
-            </label>
-            <ion-item class="item-divider " id="main-list-item-divider2">Floor #{{floor}}</ion-item>
-            <ion-toggle ng-repeat="restroom in restrooms" ng-model="restroom.occupied"
-              ng-change="update(restroom.id, restroom)" toggle-class="toggle-positive"
-              >Room #{{restroom.id}} (입장 시간 : {{(restroom.startTime | date:'yyyy-MM-dd HH:mm:ss') || "N/A"}})</ion-toggle>
-            <button class="button button-block button-positive" ng-click="list()">새로 고침</button>
-        </ion-list>
-    </ion-content>
+<ion-view title="화장실 사용 현황" id="main">
+  <ion-content padding="true" class="has-header">
+    <div class="row">
+      <div class="col text-right">
+        <button class="button button-positive icon ion-refresh" ng-click="main.list()"></button>
+        <button class="button button-positive icon ion-gear-a" ui-sref="settings"></button>
+      </div>
+    </div>
+    <ion-list ng-repeat="floor in main.floors">
+      <ion-item class="item-divider"><strong>Floor {{floor}}</strong></ion-item>
+      <div class="button-bar">
+          <button ng-repeat="restroom in main.restrooms | filter: {id:floor}"
+            style="margin:10px 5px; border-radius:10px;"
+            class="button button-block icon-left"
+            ng-class="restroom.occupied ? 'button-assertive ion-locked' : 'button-balanced ion-unlocked'">
+              <strong>{{restroom.id}}</strong>
+              <span class="item-note">{{(restroom.startTime | date:'HH:mm:ss') || "&nbsp;--:&nbsp;--:&nbsp;--;"}}</span>
+          </button>
+      </div>
+    </ion-list>
+  </ion-content>
 </ion-view>

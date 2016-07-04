@@ -1,61 +1,50 @@
-angular.module('app.controllers', [])
+var module = angular.module('app.controllers', []);
 
-.controller('mainCtrl', function($scope, mainSvc, $http) {
-  console.log('Calling mainCtrl');
-  var restrooms = [];
+module.controller('mainCtrl', function(MainSvc, FLOORS, $log) {
+  $log.info('> MainCtrl');
+  var main = this;
 
-  $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
-    .success(function(data) {
-      $scope.restrooms = data.sort(function(a, b) {
-        if (a.id > b.id) {
-          return 1;
-        }
-        if (a.id < b.id) {
-          return -1;
-        }
-        return 0;
-      });
-    })
-    .error(function(data, status, headers) {
-      alert('Repos status ' + status + ' --- headers : ' + headers);
+  main.floors = FLOORS;
+
+  MainSvc.list().
+    then((result) => {
+      $log.debug(result);
+      main.restrooms = result.data;
     });
 
-  $scope.list = function() {
-    console.log("Calling mainCtrl#list");
-    $http.get('http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom')
-      .success(function(data) {
-        $scope.restrooms = data.filter(function(restroom) {
-          if (!$scope.floor) {
-            return true;
-          }
-          return restroom.id.split('-')[0] == $scope.floor;
-        }).sort(function(a, b) {
-          if (a.id > b.id) {
-            return 1;
-          }
-          if (a.id < b.id) {
-            return -1;
-          }
-          return 0;
-        });
-      })
-      .error(function(data, status, headers) {
-        alert('Repos status ' + status + ' --- headers : ' + headers);
+  main.list = function() {
+    MainSvc.list().
+      then((result) => {
+        $log.debug(result);
+        main.restrooms = result.data;
       });
   }
+});
+
+module.controller('settingsCtrl', function($scope, SettingsSvc, $log) {
+  $log.info('Calling settingsCtrl');
+
+  SettingsSvc.list().
+    then((data) => $scope.restrooms = data);
+
+  $scope.list = function() {
+    $log.info("Calling settingsCtrl#list");
+    SettingsSvc.list($scope.floor).
+      then((data) => $scope.restrooms = data);
+  };
 
   $scope.update = function(id, restroom) {
-    console.log('Calling mainCtrl#update');
-    mainSvc.update(id, restroom);
+    $log.info('Calling settingsCtrl#update');
+    SettingsSvc.update(id, restroom);
     $scope.list();
-  }
-})
+  };
+});
 
-.controller('aboutCtrl', function($scope) {
+module.controller('aboutCtrl', function($scope) {
 
-})
+});
 
-.controller('labCtrl', function($scope) {
+module.controller('labCtrl', function($scope) {
   var members = [
     {id: 1, name: '정승길', role: '랩장', img: '1466880064_malecostume.png'},
     {id: 2, name: '윤장한', role: '아두이노 개발', img: '1466880049_male3.png'},
@@ -67,9 +56,9 @@ angular.module('app.controllers', [])
     {id: 8, name: '조한석', role: '부상', img: '1466880069_supportmale.png'}
   ];
   $scope.members = members;
-})
+});
 
-.controller('loginCtrl', function($scope) {
+module.controller('loginCtrl', function($scope) {
   $scope.user = {};
   $scope.login = function() {
     if ($scope.user.username === 'arduino.onelab' && $scope.user.password === 'Arduino12#$') {
@@ -78,7 +67,4 @@ angular.module('app.controllers', [])
       alert('login failure!');
     }
   };
-})
-
-.controller('page6Ctrl', function($scope) {
-})
+});
