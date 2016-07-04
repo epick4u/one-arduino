@@ -44,6 +44,10 @@ module.controller('aboutCtrl', function($scope) {
 
 });
 
+module.controller('page6Ctrl', function($scope) {
+
+});
+
 module.controller('labCtrl', function($scope) {
   var members = [
     {id: 1, name: '정승길', role: '랩장', img: '1466880064_malecostume.png'},
