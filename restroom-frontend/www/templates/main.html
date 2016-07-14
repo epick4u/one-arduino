@@ -9,7 +9,7 @@
     <ion-list ng-repeat="floor in main.floors">
       <ion-item class="item-divider"><strong>Floor {{floor}}</strong></ion-item>
       <div class="button-bar">
-          <button ng-repeat="restroom in main.restrooms | filter: {id:floor}"
+          <button ng-repeat="restroom in main.restrooms | filter: {id:floor} | orderBy:'id'"
             style="margin:10px 5px; border-radius:10px;"
             class="button button-block icon-left"
             ng-class="restroom.occupied ? 'button-assertive ion-locked' : 'button-balanced ion-unlocked'">
