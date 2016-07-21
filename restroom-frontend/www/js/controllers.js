@@ -7,14 +7,14 @@ module.controller('mainCtrl', function(MainSvc, FLOORS, $log) {
   main.floors = FLOORS;
 
   MainSvc.list().
-    then((result) => {
+    then(function (result) {
       $log.debug(result);
       main.restrooms = result.data;
     });
 
   main.list = function() {
     MainSvc.list().
-      then((result) => {
+      then(function (result) {
         $log.debug(result);
         main.restrooms = result.data;
       });
@@ -25,12 +25,16 @@ module.controller('settingsCtrl', function($scope, SettingsSvc, $log) {
   $log.info('Calling settingsCtrl');
 
   SettingsSvc.list().
-    then((data) => $scope.restrooms = data);
+    then(function (data) {
+      $scope.restrooms = data
+  });
 
   $scope.list = function() {
     $log.info("Calling settingsCtrl#list");
     SettingsSvc.list($scope.floor).
-      then((data) => $scope.restrooms = data);
+      then(function (data) {
+        $scope.restrooms = data
+    });
   };
 
   $scope.update = function(id, restroom) {
