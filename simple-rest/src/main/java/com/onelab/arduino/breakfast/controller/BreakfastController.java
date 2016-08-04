@@ -16,5 +16,10 @@ import com.onelab.arduino.restroom.RoomVO;
 @CrossOrigin(origins = "*")
 @RestController(value="/breakfast")
 public class BreakfastController {
+
+	@RequestMapping(value="/status", method=RequestMethod.GET)
+    public @ResponseBody void selectStatus() {
 		
+        return;
+    }
 }
