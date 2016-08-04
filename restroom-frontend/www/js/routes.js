@@ -65,6 +65,12 @@ angular.module('app.routes', [])
         controller: 'settingsCtrl'
       })
 
+      .state('breakfast', {
+        url: '/breakfast',
+        templateUrl: 'templates/breakfast.html',
+        controller: 'breakfastCtrl'
+      });
+
 
 
     $urlRouterProvider.otherwise('/page1/restroom')
