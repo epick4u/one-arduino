@@ -21,6 +21,11 @@ module.controller('mainCtrl', function(MainSvc, FLOORS, $log) {
   }
 });
 
+module.controller('breakfastCtrl', function($scope, SettingsSvc, $log) {
+  $log.info('Calling breakfastCtrl');
+
+});
+
 module.controller('settingsCtrl', function($scope, SettingsSvc, $log) {
   $log.info('Calling settingsCtrl');
 
