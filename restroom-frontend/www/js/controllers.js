@@ -1,5 +1,15 @@
 var module = angular.module('app.controllers', []);
 
+module.controller('breakfastCtrl', function(BreakfastSvc, $log) {
+  $log.info('Calling breakfastCtrl');
+  var breakfast = this;
+
+  breakfast.recipients = [];
+  for (var i = 0; i < 10; i++) {
+    breakfast.recipients.push({id: i, cardId: i, name: 'Dale Seo', team: 'PF1'});
+  }
+});
+
 module.controller('mainCtrl', function(MainSvc, FLOORS, $log) {
   $log.info('> MainCtrl');
   var main = this;
@@ -19,11 +29,6 @@ module.controller('mainCtrl', function(MainSvc, FLOORS, $log) {
         main.restrooms = result.data;
       });
   }
-});
-
-module.controller('breakfastCtrl', function($scope, SettingsSvc, $log) {
-  $log.info('Calling breakfastCtrl');
-
 });
 
 module.controller('settingsCtrl', function($scope, SettingsSvc, $log) {

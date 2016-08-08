@@ -17,14 +17,7 @@
     </div>
     <ion-list id="main-list5" class=" ">
       <ion-item class="item-divider">조식 수령자 명단</ion-item>
-      <ion-item>#1%wdsaf23rfwa 염동환 밥</ion-item>
-      <ion-item>#1%wdsaf23rfwa 서대영 빵</ion-item>
-      <ion-item>#1%wdsaf23rfwa 정승길 빵</ion-item>
-      <ion-item>#1%wdsaf23rfwa 김동현 밥</ion-item>
-      <ion-item>#1%wdsaf23rfwa 윤장한 밥</ion-item>
-      <ion-item>#1%wdsaf23rfwa 최은봉 빵</ion-item>
-      <ion-item>#1%wdsaf23rfwa 조성근 밥</ion-item>
-      <ion-item>#1%wdsaf23rfwa 조한석 밥</ion-item>
+      <ion-item ng-repeat="recipient in breakfast.recipients">{{recipient.id}}, {{recipient.name}}, {{recipient.team}}</ion-item>
     </ion-list>
   </ion-content>
 </ion-view>

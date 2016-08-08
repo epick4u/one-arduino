@@ -2,6 +2,9 @@ const baseUrl = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:808
 
 var module = angular.module('app.services', []);
 
+module.service('BreakfastSvc', function($http, $log) {
+});
+
 module.service('MainSvc', function($http, $log) {
   var svc = this;
 
