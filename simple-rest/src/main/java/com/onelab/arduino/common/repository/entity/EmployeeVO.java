@@ -2,32 +2,34 @@ package com.onelab.arduino.common.repository.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name="employee")
 public class EmployeeVO {
 	
 	@Id
-	String id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	Long seq;
 	
-	@Column(nullable = false)
+	@Column(unique = true, nullable = false)
 	String cardId;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	String name;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	String team;
-	
-	public String getId() {
-		return id;
+
+	public Long getSeq() {
+		return seq;
 	}
-	
-	public void setId(String id) {
-		this.id = id;
+
+	public void setSeq(Long seq) {
+		this.seq = seq;
 	}
-	
-	
+
 	public String getCardId() {
 		return cardId;
 	}

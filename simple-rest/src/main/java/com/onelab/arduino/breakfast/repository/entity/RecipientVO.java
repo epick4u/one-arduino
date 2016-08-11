@@ -12,15 +12,15 @@ import javax.persistence.ManyToOne;
 
 import com.onelab.arduino.common.repository.entity.EmployeeVO;
 
-@Entity
+@Entity(name="recipient")
 public class RecipientVO {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	long seq;
 	
-	@ManyToOne
-	@JoinColumn(name="employee_id", referencedColumnName="id")
+	@ManyToOne(targetEntity=EmployeeVO.class)
+	@JoinColumn(name="card_id")
 	EmployeeVO employee;
 	
 	@Column(nullable = false)

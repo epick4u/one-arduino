@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.onelab.arduino.breakfast.repository.RecipientRepository;
 import com.onelab.arduino.breakfast.repository.entity.RecipientVO;
+import com.onelab.arduino.common.repository.EmployeeRepository;
 import com.onelab.arduino.common.repository.entity.EmployeeVO;
 
 @CrossOrigin(origins = "*")
-@RestController(value="/breakfast")
+@RestController()
+@RequestMapping(value="/breakfast")
 public class BreakfastController implements InitializingBean {
 
 	private static final int TotalCount = 40;
@@ -29,6 +31,9 @@ public class BreakfastController implements InitializingBean {
 	
 	@Autowired
 	RecipientRepository recipientRepository;
+	
+	@Autowired
+	EmployeeRepository employeeRepository;
 	
 	/**
 	 * 조식 현황 (남은 수량)
@@ -73,25 +78,33 @@ public class BreakfastController implements InitializingBean {
 	 * 호출된 시간을 기준으로 수령 정보 저장
 	 * @param employeeCardId
 	 */
-	@RequestMapping(value="/recipient/{employeeCardId}", method=RequestMethod.PUT)
+	@RequestMapping(value="/recipient/{employeeCardId}", method=RequestMethod.POST)
     public @ResponseBody void insertRecipient(@PathVariable String employeeCardId) {
 		
-		EmployeeVO employeeVO = new EmployeeVO();
-		employeeVO.setCardId(employeeCardId);
+		EmployeeVO employeeVO = employeeRepository.findByCardId(employeeCardId);
+		if (employeeVO == null) {
+			
+			employeeVO = new EmployeeVO();
+			employeeVO.setCardId(employeeCardId);
+			employeeRepository.save(employeeVO);
+		}
 		
-		
-		RecipientVO recipientVO =  new RecipientVO();
-		recipientVO.setEmployee(employeeVO);
-		recipientVO.setReceiptDate(new Date());
-		
-        recipientRepository.save(recipientVO);
+		RecipientVO recipientVO = recipientRepository.findByEmployeeAndReceiptDateBetween(employeeVO, startDate, endDate);
+		if (recipientVO == null) {
+
+			recipientVO =  new RecipientVO();
+			recipientVO.setEmployee(employeeVO);
+			recipientVO.setReceiptDate(new Date());
+
+			recipientRepository.save(recipientVO);
+		}
     }
 	
 	/**
-	 * 당일 00~24 셋팅
+	 * 당일 start(00)~end(24) 셋팅
 	 * 빈 초기 로드시, 매일 자정 호출되어 리셋됨.
 	 */
-	@Scheduled(cron="0 0 0 * *")
+	@Scheduled(cron="0 0 0 * * *")
 	private void resetDateRange() {
 		
 		Calendar calendar = Calendar.getInstance();

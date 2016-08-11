@@ -6,4 +6,5 @@ import com.onelab.arduino.common.repository.entity.EmployeeVO;
 
 public interface EmployeeRepository extends CrudRepository<EmployeeVO, String> {
 
+	public EmployeeVO findByCardId(String cardId);
 }
