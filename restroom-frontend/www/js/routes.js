@@ -68,7 +68,8 @@ angular.module('app.routes', [])
       .state('breakfast', {
         url: '/breakfast',
         templateUrl: 'templates/breakfast.html',
-        controller: 'breakfastCtrl'
+        controller: 'breakfastCtrl',
+        controllerAs: 'breakfast'
       });
 
 
