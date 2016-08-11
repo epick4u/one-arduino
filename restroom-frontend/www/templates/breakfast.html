@@ -6,18 +6,18 @@
         <img src="img/breakfast.jpg" width="100%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
       </div>
       <div class="row">
-        <div class="col" style="">
-          <h4>남은 수량 / 총 수량 = 15개 / 40개</h4>
+        <div class="col8" style="">
+          <h4 style="color:blue;">수량 정보 : {{breakfast.status.leftCount}} / {{breakfast.status.totalCount}} 개 (Last updated : {{breakfast.status.date | date:'yyyy-MM-dd HH:mm:ss'}})</h4>
         </div>
         <div class="col text-right">
-          <button class="button button-positive icon ion-refresh" onclick="alert('준비중')"></button>
+          <button class="button button-positive icon ion-refresh" ng-click="breakfast.refresh()"></button>
           <button class="button button-positive icon ion-gear-a" onclick="alert('준비중')"></button>
         </div>
       </div>
     </div>
     <ion-list id="main-list5" class=" ">
       <ion-item class="item-divider">조식 수령자 명단</ion-item>
-      <ion-item ng-repeat="recipient in breakfast.recipients">{{recipient.id}}, {{recipient.name}}, {{recipient.team}}</ion-item>
+      <ion-item ng-repeat="recipient in breakfast.recipients">{{recipient.receiptDate | date:'HH:mm:ss'}} {{recipient.employee.cardId}}, {{recipient.employee.name}}, {{recipient.employee.team}}</ion-item>
     </ion-list>
   </ion-content>
 </ion-view>
