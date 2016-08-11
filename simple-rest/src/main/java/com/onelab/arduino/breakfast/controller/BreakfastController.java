@@ -1,27 +1,21 @@
 package com.onelab.arduino.breakfast.controller;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.onelab.arduino.breakfast.repository.RecipientRepository;
 import com.onelab.arduino.breakfast.repository.entity.RecipientVO;
 import com.onelab.arduino.common.repository.EmployeeRepository;
 import com.onelab.arduino.common.repository.entity.EmployeeVO;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @CrossOrigin(origins = "*")
-@RestController()
-@RequestMapping(value="/breakfast")
+@RestController
+@RequestMapping("/breakfast")
 public class BreakfastController implements InitializingBean {
 
 	private static final int TotalCount = 40;

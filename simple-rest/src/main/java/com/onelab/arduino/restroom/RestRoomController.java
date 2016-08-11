@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "*")
-@RestController(value="/restroom")
+@RestController
+@RequestMapping("/restroom")
 public class RestRoomController implements InitializingBean {
 	
 	private Map<String, RoomVO> roomMap;
