@@ -7,7 +7,7 @@
       </div>
       <div class="row">
         <div class="col" style="">
-          <h4>남은 수량 / 총 수량 = 15개 / 40개</h4>
+          <h5 style="color:blue;">수량 정보 : {{breakfast.status.leftCount}} / {{breakfast.status.totalCount}} 개 (Last updated : {{breakfast.status.date | date:'yyyy-MM-dd HH:mm:ss'}})</h5>
         </div>
         <div class="col text-right">
           <button class="button button-positive icon ion-refresh" onclick="alert('준비중')"></button>
@@ -17,7 +17,7 @@
     </div>
     <ion-list id="main-list5" class=" ">
       <ion-item class="item-divider">조식 수령자 명단</ion-item>
-      <ion-item ng-repeat="recipient in breakfast.recipients">{{recipient.id}}, {{recipient.name}}, {{recipient.team}}</ion-item>
+      <ion-item ng-repeat="recipient in breakfast.recipients">{{recipient.receiptDate | date:'HH:mm:ss'}} {{recipient.employee.cardId}}, {{recipient.employee.name}}, {{recipient.employee.team}}</ion-item>
     </ion-list>
   </ion-content>
 </ion-view>

@@ -1,8 +1,21 @@
-const baseUrl = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom";
+// const baseUrl = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080";
+const baseUrl = "http://localhost:8080";
 
 var module = angular.module('app.services', []);
 
 module.service('BreakfastSvc', function($http, $log) {
+  var svc = this;
+  var breakfastUrl = baseUrl + '/breakfast';
+
+  svc.getRecipients = function() {
+    $log.info('>> BreakfastSvc#getRecipients');
+    return $http.get(breakfastUrl + '/recipient');
+  };
+
+  svc.getStatus = function() {
+    $log.info('>> BreakfastSvc#getStatus');
+    return $http.get(breakfastUrl + '/status');
+  };
 });
 
 module.service('MainSvc', function($http, $log) {
@@ -11,7 +24,7 @@ module.service('MainSvc', function($http, $log) {
   svc.list = function() {
     $log.info('>> MainSvc#list');
 
-    return $http.get(baseUrl)
+    return $http.get(baseUrl + '/restroom')
       .then(function(result) {
         $log.debug(result);
         // result.data = restroomArray;
@@ -29,7 +42,7 @@ module.service('SettingsSvc', function($http, $log) {
     $log.info('>> SettingsSvc#update');
 
     var action = restroom.occupied ? 'in' : 'out';
-    var url = baseUrl + '/' + id + '/' + action;
+    var url = baseUrl + '/restroom/' + id + '/' + action;
 
     $http.get(url).success(function(data) {
     }).error(function(data, status, headers) {
@@ -41,7 +54,7 @@ module.service('SettingsSvc', function($http, $log) {
   mainSvc.list = function(floor) {
     $log.info('>> SettingsSvcc#list');
 
-    return $http.get(baseUrl)
+    return $http.get(baseUrl + '/restroom')
       .then(function(result) {
         return result.data.filter(function(restroom) {
           if (!floor) {
