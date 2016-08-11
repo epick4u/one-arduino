@@ -4,21 +4,19 @@ module.controller('breakfastCtrl', function(BreakfastSvc, $log) {
   $log.info('Calling breakfastCtrl');
   var breakfast = this;
 
-  // breakfast.recipients = [];
-  // for (var i = 0; i < 10; i++) {
-  //   breakfast.recipients.push({id: i, cardId: i, name: 'Dale Seo', team: 'PF1'});
-  // }
-  BreakfastSvc.getRecipients()
-    .then(function(response) {
-      breakfast.recipients = response.data;
-    });
+  breakfast.refresh = function() {
+    BreakfastSvc.getRecipients()
+      .then(function(response) {
+        breakfast.recipients = response.data;
+      });
 
-  BreakfastSvc.getStatus()
-    .then(function(response) {
-      breakfast.status = response.data;
-    });
+    BreakfastSvc.getStatus()
+      .then(function(response) {
+        breakfast.status = response.data;
+      });
+  };
 
-  $log.debug("# recipients : " + JSON.stringify(breakfast.recipients));
+  breakfast.refresh();
 });
 
 module.controller('mainCtrl', function(MainSvc, FLOORS, $log) {
