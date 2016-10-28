@@ -14,8 +14,8 @@
             class="button button-block icon-left"
             ng-class="restroom.occupied ? 'button-assertive ion-locked' : 'button-balanced ion-unlocked'">
               <strong>{{restroom.id}}</strong>
-              <span class="item-note">
-              입장시간 : {{(restroom.startTime | date:'HH:mm:ss') || "&nbsp;--:&nbsp;--:&nbsp;--;"}}</span>
+              <span class="item-note" style="color: #FFFFFF; font-weight: bold;">
+              입장시간 : {{(restroom.startTime | date:'HH:mm') || "&nbsp;--:&nbsp;--:&nbsp;--;"}}</span>
           </button>
       </div>
     </ion-list>
