@@ -1,10 +1,6 @@
 package com.onelab.arduino.common.repository.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name="employee")
 public class EmployeeVO {
@@ -21,6 +17,9 @@ public class EmployeeVO {
 	
 	@Column(nullable = true)
 	String team;
+
+	@OneToOne
+	NickName nickName;
 
 	public Long getSeq() {
 		return seq;
@@ -52,5 +51,13 @@ public class EmployeeVO {
 	
 	public void setTeam(String team) {
 		this.team = team;
+	}
+
+	public NickName getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(NickName nickName) {
+		this.nickName = nickName;
 	}
 }
