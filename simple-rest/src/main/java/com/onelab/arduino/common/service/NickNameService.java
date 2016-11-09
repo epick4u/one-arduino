@@ -14,10 +14,6 @@ public class NickNameService {
 
 
     public String createNickName(long seq){
-
-
-
-
-
+        return null;
     }
 }
