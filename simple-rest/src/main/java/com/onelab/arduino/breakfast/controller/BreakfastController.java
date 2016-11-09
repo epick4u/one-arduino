@@ -4,7 +4,6 @@ import com.onelab.arduino.breakfast.repository.RecipientRepository;
 import com.onelab.arduino.breakfast.repository.entity.RecipientVO;
 import com.onelab.arduino.common.repository.EmployeeRepository;
 import com.onelab.arduino.common.repository.entity.EmployeeVO;
-import com.onelab.arduino.common.repository.NickNameRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,9 +28,6 @@ public class BreakfastController implements InitializingBean {
 	
 	@Autowired
 	EmployeeRepository employeeRepository;
-
-	@Autowired
-	NickNameRepository nickNameRepository;
 	
 	/**
 	 * 조식 현황 (남은 수량)

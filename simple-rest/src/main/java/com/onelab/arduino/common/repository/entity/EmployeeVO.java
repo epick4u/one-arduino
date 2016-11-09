@@ -19,7 +19,8 @@ public class EmployeeVO {
 	String team;
 
 	@OneToOne
-	NickName nickName;
+	@JoinColumn(name = "nickname_seq")
+	NickNameVO nickName;
 
 	public Long getSeq() {
 		return seq;
@@ -53,11 +54,11 @@ public class EmployeeVO {
 		this.team = team;
 	}
 
-	public NickName getNickName() {
+	public NickNameVO getNickName() {
 		return nickName;
 	}
 
-	public void setNickName(NickName nickName) {
+	public void setNickName(NickNameVO nickName) {
 		this.nickName = nickName;
 	}
 }
