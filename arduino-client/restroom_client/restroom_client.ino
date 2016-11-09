@@ -2,11 +2,11 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char* ssid     = "SKP-GUEST";
+const char* ssid     = "ONE-GUEST";
 
 const char* server_url = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/restroom";
 
-const char* flour = "/12-";
+const char* flour = "/13-";
 
 const char* in = "/in";
 const char* out = "/out";
@@ -39,10 +39,12 @@ void setup() {
     Serial.print(".");
   }
 
-  Serial.println("");
-  Serial.println("WiFi connected");  
+  Serial.println("WiFi connected");
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP()); 
+  
 }
 
 
