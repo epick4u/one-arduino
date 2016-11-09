@@ -21,22 +21,23 @@ angular.module('app.routes', [])
         }
       })
 
+      .state('tabsController.breakfast', {
+        url: '/breakfast',
+        views: {
+          'tab2': {
+            templateUrl: 'templates/breakfast.html',
+            controller: 'breakfastCtrl',
+            controllerAs: 'breakfast'
+          }
+        }
+      })
+
       .state('tabsController.about', {
         url: '/about',
         views: {
           'tab3': {
             templateUrl: 'templates/about.html',
             controller: 'aboutCtrl'
-          }
-        }
-      })
-
-      .state('tabsController.lab', {
-        url: '/lab',
-        views: {
-          'tab2': {
-            templateUrl: 'templates/lab.html',
-            controller: 'labCtrl'
           }
         }
       })
