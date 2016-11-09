@@ -7,6 +7,9 @@ public class NickName {
 
 	@Id
 	@Column(unique = true, nullable = false)
+	Long seq;
+
+	@Column(unique = true, nullable = false)
 	String nickName;
 
 	public String getNickName() {
@@ -15,6 +18,14 @@ public class NickName {
 
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+	}
+
+	public Long getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Long seq) {
+		this.seq = seq;
 	}
 
 }
