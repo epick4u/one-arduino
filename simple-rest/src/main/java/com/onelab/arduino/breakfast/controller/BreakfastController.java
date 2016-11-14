@@ -4,6 +4,8 @@ import com.onelab.arduino.breakfast.repository.RecipientRepository;
 import com.onelab.arduino.breakfast.repository.entity.RecipientVO;
 import com.onelab.arduino.common.repository.EmployeeRepository;
 import com.onelab.arduino.common.repository.entity.EmployeeVO;
+import com.onelab.arduino.common.repository.entity.NickNameVO;
+import com.onelab.arduino.common.service.NickNameService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,6 +30,9 @@ public class BreakfastController implements InitializingBean {
 	
 	@Autowired
 	EmployeeRepository employeeRepository;
+
+	@Autowired
+	private NickNameService nickNameService;
 	
 	/**
 	 * 조식 현황 (남은 수량)
@@ -81,6 +86,10 @@ public class BreakfastController implements InitializingBean {
 		if (employeeVO == null) {
 			employeeVO = new EmployeeVO();
 			employeeVO.setCardId(employeeCardId);
+			employeeRepository.save(employeeVO);
+
+			NickNameVO nickName = this.nickNameService.createNickName(employeeVO.getSeq());
+			employeeVO.setNickName(nickName);
 			employeeRepository.save(employeeVO);
 		}
 		
