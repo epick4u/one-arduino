@@ -3,10 +3,10 @@ package com.onelab.arduino.common.repository.entity;
 import javax.persistence.*;
 
 @Entity(name="nickname")
-public class NickNameVO {
+public class NickName {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(unique = true, nullable = false)
 	Long seq;
 
 	@Column(unique = true, nullable = false)
@@ -27,4 +27,5 @@ public class NickNameVO {
 	public void setSeq(Long seq) {
 		this.seq = seq;
 	}
+
 }
