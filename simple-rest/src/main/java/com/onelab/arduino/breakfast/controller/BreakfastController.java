@@ -73,7 +73,7 @@ public class BreakfastController implements InitializingBean {
 	 * @param menu bread/rice
 	 * @param employeeCardId
 	 */
-	@RequestMapping(value="/recipient/{menu}/{employeeCardId}", method=RequestMethod.POST)
+	@RequestMapping(value="/recipient/{menu}/{employeeCardId}", method=RequestMethod.GET)
     public @ResponseBody void insertRecipient(@PathVariable String menu,
 											  @PathVariable String employeeCardId) {
 
