@@ -5,6 +5,9 @@ module.controller('breakfastCtrl', function(BreakfastSvc, $log) {
   var breakfast = this;
 
   breakfast.refresh = function() {
+
+    breakfast.currentTime = new Date();
+
     BreakfastSvc.getRecipients()
       .then(function(response) {
         breakfast.recipients = response.data;
