@@ -3,7 +3,7 @@ package com.onelab.arduino.common.repository.entity;
 import javax.persistence.*;
 
 @Entity(name="nickname")
-public class NickName {
+public class NickNameVO {
 
 	@Id
 	@Column(unique = true, nullable = false)
@@ -11,6 +11,9 @@ public class NickName {
 
 	@Column(unique = true, nullable = false)
 	String nickName;
+
+	@Column(unique = true)
+	Long employeeSeq;
 
 	public String getNickName() {
 		return nickName;
@@ -28,4 +31,11 @@ public class NickName {
 		this.seq = seq;
 	}
 
+	public Long getEmployeeSeq() {
+		return employeeSeq;
+	}
+
+	public void setEmployeeSeq(Long employeeSeq) {
+		this.employeeSeq = employeeSeq;
+	}
 }

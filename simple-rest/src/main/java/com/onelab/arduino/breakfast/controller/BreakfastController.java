@@ -70,16 +70,15 @@ public class BreakfastController implements InitializingBean {
 	
 	/**
 	 * 호출된 시간을 기준으로 수령 정보 저장
-	 * @param breakfast bread/rice
+	 * @param menu bread/rice
 	 * @param employeeCardId
 	 */
-	@RequestMapping(value="/recipient/{breakfast}/{employeeCardId}", method=RequestMethod.POST)
-    public @ResponseBody void insertRecipient(@PathVariable String breakfast,
+	@RequestMapping(value="/recipient/{menu}/{employeeCardId}", method=RequestMethod.POST)
+    public @ResponseBody void insertRecipient(@PathVariable String menu,
 											  @PathVariable String employeeCardId) {
 
 		EmployeeVO employeeVO = employeeRepository.findByCardId(employeeCardId);
 		if (employeeVO == null) {
-
 			employeeVO = new EmployeeVO();
 			employeeVO.setCardId(employeeCardId);
 			employeeRepository.save(employeeVO);
@@ -87,11 +86,10 @@ public class BreakfastController implements InitializingBean {
 		
 		RecipientVO recipientVO = recipientRepository.findByEmployeeAndReceiptDateBetween(employeeVO, startDate, endDate);
 		if (recipientVO == null) {
-
 			recipientVO =  new RecipientVO();
 			recipientVO.setEmployee(employeeVO);
 			recipientVO.setReceiptDate(new Date());
-
+			recipientVO.setMenu(menu);
 			recipientRepository.save(recipientVO);
 		}
     }

@@ -18,6 +18,9 @@ public class RecipientVO {
 	
 	@Column(nullable = false)
 	Date receiptDate;
+
+	@Column(nullable = false)
+	String menu;
 	
 	public long getSeq() {
 		return seq;
@@ -41,5 +44,13 @@ public class RecipientVO {
 
 	public void setReceiptDate(Date receiptDate) {
 		this.receiptDate = receiptDate;
+	}
+
+	public String getMenu() {
+		return menu;
+	}
+
+	public void setMenu(String menu) {
+		this.menu = menu;
 	}
 }
