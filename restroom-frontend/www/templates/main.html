@@ -13,9 +13,9 @@
             style="margin:10px 5px; border-radius:10px;"
             class="button button-block icon-left"
             ng-class="restroom.occupied ? 'button-assertive ion-locked' : 'button-balanced ion-unlocked'">
-              <strong>{{restroom.id}}</strong>
-              <span class="item-note" ng-style="{color: restroom.occupied ? '#FFFFFF' : '#FFFFFF'}" style="font-weight: bold;">
-                {{ (restroom.startTime | date:'HH:mm') || "--:--" }}
+              <strong>{{restroom.occupied ? '': 'EMPTY'}}</strong>
+              <span class="item-note" ng-style="{color: restroom.occupied ? '#FFFFFF' : '#33cd5f'}" style="font-weight: bold;">
+                {{ (restroom.startTime | date:'HH:mm') || "" }}
               </span>
           </button>
       </div>
