@@ -13,10 +13,7 @@
             style="margin:10px 5px; border-radius:10px;"
             class="button button-block icon-left"
             ng-class="restroom.occupied ? 'button-assertive ion-locked' : 'button-balanced ion-unlocked'">
-              <strong>{{restroom.occupied ? '': 'EMPTY'}}</strong>
-              <span class="item-note" style="color: #FFFFFF;font-weight: bold;">
-                {{ (restroom.startTime | date:'HH:mm') || "" }}
-              </span>
+              <strong>{{restroom.occupied ? (restroom.startTime | date:'HH:mm') : 'EMPTY'}}</strong>
           </button>
       </div>
     </ion-list>
