@@ -60,6 +60,12 @@ angular.module('app.routes', [])
         controller: 'page6Ctrl'
       })
 
+      .state('lab', {
+        url: '/lab',
+        templateUrl: 'templates/lab.html',
+        controller: 'labCtrl'
+      })
+
       .state('settings', {
         url: '/settings',
         templateUrl: 'templates/settings.html',
