@@ -6,6 +6,8 @@ import com.onelab.arduino.common.repository.EmployeeRepository;
 import com.onelab.arduino.common.repository.entity.EmployeeVO;
 import com.onelab.arduino.common.repository.entity.NickNameVO;
 import com.onelab.arduino.common.service.NickNameService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +22,7 @@ import java.util.List;
 @RequestMapping("/breakfast")
 public class BreakfastController implements InitializingBean {
 
+	private static final Logger logger = LoggerFactory.getLogger(BreakfastController.class);
 	private static final int TotalCount = 40;
 	
 	private Date startDate;
@@ -91,6 +94,7 @@ public class BreakfastController implements InitializingBean {
 			NickNameVO nickName = this.nickNameService.createNickName(employeeVO.getSeq());
 			employeeVO.setNickName(nickName);
 			employeeRepository.save(employeeVO);
+			logger.info("New employee : {}", employeeVO);
 		}
 		
 		RecipientVO recipientVO = recipientRepository.findByEmployeeAndReceiptDateBetween(employeeVO, startDate, endDate);
@@ -100,6 +104,10 @@ public class BreakfastController implements InitializingBean {
 			recipientVO.setReceiptDate(new Date());
 			recipientVO.setMenu(menu);
 			recipientRepository.save(recipientVO);
+			logger.info("recipient : {}", recipientVO);
+		}
+		else {
+			logger.info("Duplicate recipient call");
 		}
     }
 	

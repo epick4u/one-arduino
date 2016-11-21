@@ -2,6 +2,8 @@ package com.onelab.arduino.common.service;
 
 import com.onelab.arduino.common.repository.NickNameRepository;
 import com.onelab.arduino.common.repository.entity.NickNameVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.util.Random;
  */
 @Service
 public class NickNameService {
+    private static final Logger logger = LoggerFactory.getLogger(NickNameService.class);
 
     @Autowired
     private NickNameRepository nickNameRepository;
@@ -28,7 +31,11 @@ public class NickNameService {
             NickNameVO nickName = nickNames.get(pos);
             nickName.setEmployeeSeq(employeeSeq);
             nickNameRepository.save(nickName);
+            logger.info("New nickname mapping : {}", nickName);
             return nickName;
+        }
+        else {
+            logger.error("Do not have available nickname anymore!!");
         }
 
         return null;
