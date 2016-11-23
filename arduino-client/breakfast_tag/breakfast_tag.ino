@@ -17,16 +17,15 @@ GND     = GND
 */
 
 char *tagId = "00000000";
-//const char* ssid     = "SKP-GUEST";
 const char* server_url = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/breakfast/recipient/bread/";
 
-#define RST_PIN  15 // RST-PIN für RC522 - RFID - SPI - Modul GPIO15 
-#define SS_PIN  2  // SDA-PIN für RC522 - RFID - SPI - Modul GPIO2
-#define SPK_PIN 5  // GPIO5
+#define RST_PIN  15 // RST-PIN RC522 - RFID - SPI - Modul GPIO15 
+#define SS_PIN  2  // SDA-PIN RC522 - RFID - SPI - Modul GPIO2
+#define SPK_PIN 5  // GPIO5//D1
+#define LED_PIN 4  // GPIO4//D2
 
 const char *ssid =  "ONE-GUEST";     // change according to your Network - cannot be longer than 32 characters!
 //const char *pass =  "yourPASSWORD"; // change according to your Network
-const char *card =  "ONE-GUEST";
 
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 
@@ -38,6 +37,10 @@ void setup()
   
   SPI.begin();           // Init SPI bus
   mfrc522.PCD_Init();    // Init MFRC522
+
+  pinMode(SPK_PIN, OUTPUT);//SPK_PIN
+  pinMode(LED_PIN, OUTPUT);//LED_PIN
+  digitalWrite(LED_PIN, LOW);
   
   //WiFi.begin(ssid, pass);
   WiFi.begin(ssid);
@@ -79,11 +82,15 @@ void loop()
   // Show some details of the PICC (that is: the tag/card)
   dump_byte_array(mfrc522.uid.uidByte, &tagId, mfrc522.uid.size);
   Serial.println(tagId);
+  //LED ON
+  digitalWrite(LED_PIN, HIGH);
   tag(tagId);
 
   //Serial.println();
   tone(SPK_PIN,2400,150);//500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
-  delay(500);
+  delay(1000);
+  //LED OFF
+  digitalWrite(LED_PIN, LOW);
   //tone(SPK_PIN,1500,150);  //500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
 }
 
