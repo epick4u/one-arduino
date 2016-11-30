@@ -19,12 +19,14 @@
     <ion-list id="main-list5" class=" ">
       <ion-item class="item-divider">조식 수령자 명단</ion-item>
       <ion-item ng-repeat="recipient in breakfast.recipients" id="{{recipient.employee.cardId}}">
-
         <h2>
-          <img class="img" src="{{recipient.employee.nickName.imgUrl}}" style="display: inline;" width="30" height="30">
-          {{recipient.employee.nickName.nickName}}
+          <span>
+            <img class="img" src="{{recipient.employee.nickName.imgUrl}}" style="display: inline;" width="40" height="40">
+          </span>
+          <span style="">{{recipient.employee.nickName.nickName}}</span>
+          <span style="">{{recipient.receiptDate | date:'HH:mm:ss'}}</span>
+          <span class="item-note">{{recipient.menu}}</span>
         </h2>
-        <p>({{recipient.menu}}) <span class="item-note">{{recipient.receiptDate | date:'HH:mm:ss'}}</span></p>
       </ion-item>
     </ion-list>
   </ion-content>
