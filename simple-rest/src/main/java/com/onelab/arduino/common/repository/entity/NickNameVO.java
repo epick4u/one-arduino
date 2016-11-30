@@ -15,6 +15,9 @@ public class NickNameVO {
 	@Column(unique = true)
 	Long employeeSeq;
 
+	@Column
+	String imgUrl;
+
 	public String getNickName() {
 		return nickName;
 	}
@@ -37,5 +40,13 @@ public class NickNameVO {
 
 	public void setEmployeeSeq(Long employeeSeq) {
 		this.employeeSeq = employeeSeq;
+	}
+
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
 	}
 }
