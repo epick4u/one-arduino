@@ -79,10 +79,6 @@ public class RestRoomController implements InitializingBean {
 
 			RoomVO restRoom = new RoomVO();
 			restRoom.setId(restroomId);
-			if (i % 2 == 0) {
-				restRoom.setStartTime(new Date());
-				restRoom.setOccupied(true);
-			}
 			roomMap.put(restroomId, restRoom);
 		}
 	}
