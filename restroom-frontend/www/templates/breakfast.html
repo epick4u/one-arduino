@@ -20,11 +20,9 @@
       <ion-item class="item-divider">조식 수령자 명단</ion-item>
       <ion-item ng-repeat="recipient in breakfast.recipients" id="{{recipient.employee.cardId}}">
         <h2>
-          <span>
-            <img class="img" src="{{recipient.employee.nickName.imgUrl}}" style="display: inline;" width="40" height="40">
-          </span>
-          <span style="">{{recipient.employee.nickName.nickName}}</span>
-          <span style="">{{recipient.receiptDate | date:'HH:mm:ss'}}</span>
+          <img class="img" src="{{recipient.employee.nickName.imgUrl}}" style="display: inline;" width="40" height="40">
+          <span class="" style="">{{recipient.employee.nickName.nickName}}</span>
+          <span class="" style="">{{recipient.receiptDate | date:'HH:mm:ss'}}</span>
           <span class="item-note">{{recipient.menu}}</span>
         </h2>
       </ion-item>
