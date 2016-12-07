@@ -17,12 +17,14 @@ GND     = GND
 */
 
 char *tagId = "00000000";
-const char* server_url = "http://ec2-52-78-61-81.ap-northeast-2.compute.amazonaws.com:8080/breakfast/recipient/bread/";
+//const char* server_url = "http://onemakers.com/breakfast/recipient/bread/";
+const char* server_url = "http://52.78.61.81:8080/breakfast/recipient/bread/";
 
 #define RST_PIN  15 // RST-PIN RC522 - RFID - SPI - Modul GPIO15 
 #define SS_PIN  2  // SDA-PIN RC522 - RFID - SPI - Modul GPIO2
 #define SPK_PIN 5  // GPIO5//D1
-#define LED_PIN 4  // GPIO4//D2
+#define LED_LEFT 4  // GPIO4//D2
+#define LED_RIGHT 0  // GPIO4//D3
 
 const char *ssid =  "ONE-GUEST";     // change according to your Network - cannot be longer than 32 characters!
 //const char *pass =  "yourPASSWORD"; // change according to your Network
@@ -39,8 +41,10 @@ void setup()
   mfrc522.PCD_Init();    // Init MFRC522
 
   pinMode(SPK_PIN, OUTPUT);//SPK_PIN
-  pinMode(LED_PIN, OUTPUT);//LED_PIN
-  digitalWrite(LED_PIN, LOW);
+  pinMode(LED_RIGHT, OUTPUT);//LED SUCCESS
+  pinMode(LED_LEFT, OUTPUT);//LED ERROR
+  digitalWrite(LED_RIGHT, LOW);
+  digitalWrite(LED_LEFT, LOW);
   
   //WiFi.begin(ssid, pass);
   WiFi.begin(ssid);
@@ -69,6 +73,11 @@ void setup()
 
 void loop() 
 { 
+  // INIT
+  digitalWrite(LED_RIGHT, LOW);//LED OFF
+  digitalWrite(LED_LEFT, LOW);//LED OFF
+  digitalWrite(SPK_PIN, LOW);//SPEAKER OFF
+  
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
     delay(50);
@@ -82,15 +91,12 @@ void loop()
   // Show some details of the PICC (that is: the tag/card)
   dump_byte_array(mfrc522.uid.uidByte, &tagId, mfrc522.uid.size);
   Serial.println(tagId);
-  //LED ON
-  digitalWrite(LED_PIN, HIGH);
+  
   tag(tagId);
 
   //Serial.println();
-  tone(SPK_PIN,2400,150);//500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
+  tone(SPK_PIN,2400,100);//500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
   delay(1000);
-  //LED OFF
-  digitalWrite(LED_PIN, LOW);
   //tone(SPK_PIN,1500,150);  //500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
 }
 
@@ -137,8 +143,13 @@ void tag(char* tagId)
 
       // file found at server
       if(httpCode == HTTP_CODE_OK) {
+          digitalWrite(LED_LEFT, HIGH);//SUCCSESS LED ON
+          digitalWrite(LED_RIGHT, HIGH);//SUCCSESS LED ON
           String payload = http.getString();
           Serial.println(payload);
+      }
+      else{
+        Serial.printf("[HTTP] not ok, error: %s\n", http.errorToString(httpCode).c_str());        
       }
   } else {
       Serial.printf("[HTTP] failed, error: %s\n", http.errorToString(httpCode).c_str());
