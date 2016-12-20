@@ -64,6 +64,7 @@ void setup()
       Serial.println(F("WiFi connected"));
       break;
     }
+    delay(100);
   }
   
   Serial.println(F("Ready!"));
@@ -80,12 +81,12 @@ void loop()
   
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
-    delay(50);
+    //delay(50);
     return;
   }
   // Select one of the cards
   if ( ! mfrc522.PICC_ReadCardSerial()) {
-    delay(50);
+    //delay(50);
     return;
   }
   // Show some details of the PICC (that is: the tag/card)
@@ -94,9 +95,7 @@ void loop()
   
   tag(tagId);
 
-  //Serial.println();
-  tone(SPK_PIN,2400,100);//500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
-  delay(1000);
+  delay(500);
   //tone(SPK_PIN,1500,150);  //500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
 }
 
@@ -143,15 +142,20 @@ void tag(char* tagId)
 
       // file found at server
       if(httpCode == HTTP_CODE_OK) {
+          //Serial.println();
+          tone(SPK_PIN,2400,100);//500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
+                 
           digitalWrite(LED_LEFT, HIGH);//SUCCSESS LED ON
           digitalWrite(LED_RIGHT, HIGH);//SUCCSESS LED ON
           String payload = http.getString();
           Serial.println(payload);
       }
       else{
+        tone(SPK_PIN,500,500);//500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
         Serial.printf("[HTTP] not ok, error: %s\n", http.errorToString(httpCode).c_str());        
       }
   } else {
+      tone(SPK_PIN,500,500);//500: 음의 높낮이(주파수), 1000: 음의 지속시간(1초)
       Serial.printf("[HTTP] failed, error: %s\n", http.errorToString(httpCode).c_str());
   }
 
