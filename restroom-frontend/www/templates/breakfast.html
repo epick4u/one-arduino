@@ -18,13 +18,10 @@
     </div>
     <ion-list id="main-list5" class=" ">
       <ion-item class="item-divider">조식 수령자 명단</ion-item>
-      <ion-item ng-repeat="recipient in breakfast.recipients" id="{{recipient.employee.cardId}}">
-        <p>
-          <img class="img" src="{{recipient.employee.nickName.imgUrl}}" style="display: inline;" width="40" height="40">
-          <span>{{recipient.employee.nickName.nickName}}</span>
-          <span class="">{{recipient.receiptDate | date:'HH:mm:ss'}}</span>
-          <span class="item-note">({{recipient.menu}})</span>
-        </p>
+      <ion-item ng-repeat="recipient in breakfast.recipients" id="{{recipient.employee.cardId}}" class="item-thumbnail-left">
+          <img class="img" src="{{recipient.employee.nickName.imgUrl}}" style="display: inline;" height="100%">
+          <h2>{{recipient.receiptDate | date:'HH시 mm분'}}</h2> <span class="item-note"><h1>{{recipient.menu == "bread" ? "빵" : "밥"}}</h1></span>
+          <h1><b>{{recipient.employee.nickName.nickName}}</b></h1>
       </ion-item>
     </ion-list>
   </ion-content>
