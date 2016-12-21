@@ -5,9 +5,9 @@ import java.util.Date;
 public class BreakfastStatusVO {
 	
 	Date date;
-	int leftCount;
-	int totalCount;
-	
+	int breadLeftCount;
+	int riceLeftCount;
+
 	public Date getDate() {
 		return date;
 	}
@@ -15,20 +15,20 @@ public class BreakfastStatusVO {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
-	public int getLeftCount() {
-		return leftCount;
+
+	public int getBreadLeftCount() {
+		return breadLeftCount;
 	}
-	
-	public void setLeftCount(int leftCount) {
-		this.leftCount = leftCount;
+
+	public void setBreadLeftCount(int breadLeftCount) {
+		this.breadLeftCount = breadLeftCount;
 	}
-	
-	public int getTotalCount() {
-		return totalCount;
+
+	public int getRiceLeftCount() {
+		return riceLeftCount;
 	}
-	
-	public void setTotalCount(int totalCount) {
-		this.totalCount = totalCount;
+
+	public void setRiceLeftCount(int riceLeftCount) {
+		this.riceLeftCount = riceLeftCount;
 	}
 }

@@ -23,7 +23,7 @@ import java.util.List;
 public class BreakfastController implements InitializingBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(BreakfastController.class);
-	private static final int TotalCount = 40;
+	private static final int TotalCount = 20;
 	
 	private Date startDate;
 	private Date endDate;
@@ -45,12 +45,24 @@ public class BreakfastController implements InitializingBean {
 	@RequestMapping(value="/status", method=RequestMethod.GET)
     public @ResponseBody BreakfastStatusVO getStatus() {
 		
-		int receiptCount = recipientRepository.countByReceiptDateBetween(startDate, endDate);
+		List<RecipientVO> recipientList = recipientRepository.findByReceiptDateBetween(startDate, endDate);
+
+		int riceCount = 0;
+		int breadCount = 0;
+
+		for(RecipientVO recipient : recipientList){
+			if(recipient.getMenu().equals("rice")){
+				riceCount++;
+			} else if(recipient.getMenu().equals("bread")){
+				breadCount++;
+			}
+		}
 		
 		BreakfastStatusVO statusVO = new BreakfastStatusVO(); 
 		statusVO.setDate(new Date());
-		statusVO.setTotalCount(TotalCount);
-		statusVO.setLeftCount(TotalCount - receiptCount);
+
+		statusVO.setBreadLeftCount(TotalCount - breadCount);
+		statusVO.setRiceLeftCount(TotalCount - riceCount);
 		
         return statusVO;
     }
