@@ -7,6 +7,7 @@ public class BreakfastStatusVO {
 	Date date;
 	int breadLeftCount;
 	int riceLeftCount;
+	boolean soldout;
 
 	public Date getDate() {
 		return date;
@@ -30,5 +31,13 @@ public class BreakfastStatusVO {
 
 	public void setRiceLeftCount(int riceLeftCount) {
 		this.riceLeftCount = riceLeftCount;
+	}
+
+	public boolean isSoldout() {
+		return soldout;
+	}
+
+	public void setSoldout(boolean soldout) {
+		this.soldout = soldout;
 	}
 }

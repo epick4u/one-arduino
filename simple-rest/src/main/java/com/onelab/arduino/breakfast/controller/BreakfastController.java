@@ -23,11 +23,12 @@ import java.util.List;
 public class BreakfastController implements InitializingBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(BreakfastController.class);
-	private static final int TotalCount = 20;
-	
+	private static final int MENU_TOTAL_COUNT = 20;
+
+	private boolean soldout = false;
 	private Date startDate;
 	private Date endDate;
-	
+
 	@Autowired
 	RecipientRepository recipientRepository;
 	
@@ -61,30 +62,24 @@ public class BreakfastController implements InitializingBean {
 		BreakfastStatusVO statusVO = new BreakfastStatusVO(); 
 		statusVO.setDate(new Date());
 
-		statusVO.setBreadLeftCount(TotalCount - breadCount);
-		statusVO.setRiceLeftCount(TotalCount - riceCount);
-		
+		statusVO.setBreadLeftCount(MENU_TOTAL_COUNT - breadCount);
+		statusVO.setRiceLeftCount(MENU_TOTAL_COUNT - riceCount);
+		statusVO.setSoldout(this.soldout);
+
         return statusVO;
     }
-	
-	@RequestMapping(value="/photo", method=RequestMethod.GET)
-    public @ResponseBody void getPhoto() {
-		
-        return;
-    }
-	
-	@RequestMapping(value="/photo", method=RequestMethod.POST)
-    public @ResponseBody void updatePhoto() {
-		
-        return;
-    }
+
+	@RequestMapping(value="/soldout", method=RequestMethod.GET)
+	public @ResponseBody BreakfastStatusVO soldout() {
+		this.soldout = true;
+		return getStatus();
+	}
 	
 	/**
 	 * 금일 기준 수령 현황 반환
 	 */
 	@RequestMapping(value="/recipient", method=RequestMethod.GET)
-    public @ResponseBody List<RecipientVO> getRecipients() {		
-		
+    public @ResponseBody List<RecipientVO> getRecipients() {
         return recipientRepository.findByReceiptDateBetween(startDate, endDate);
     }
 	
@@ -137,6 +132,8 @@ public class BreakfastController implements InitializingBean {
 		
 		calendar.add(Calendar.HOUR_OF_DAY, 24);
 		this.endDate = calendar.getTime();
+
+		this.soldout = false;
 	}
 	
 	@Override
