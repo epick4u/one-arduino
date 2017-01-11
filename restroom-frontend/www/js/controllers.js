@@ -1,6 +1,6 @@
 var module = angular.module('app.controllers', []);
 
-module.controller('breakfastCtrl', function(BreakfastSvc, $log) {
+module.controller('breakfastCtrl', function($scope, BreakfastSvc, $log, $ionicPopup) {
   $log.info('Calling breakfastCtrl');
   var breakfast = this;
 
@@ -18,6 +18,26 @@ module.controller('breakfastCtrl', function(BreakfastSvc, $log) {
         breakfast.status = response.data;
       });
   };
+
+  breakfast.showConfirm = function() {
+    var confirmPopup = $ionicPopup.confirm({
+      title: '매진 되었나요?',
+      template: '남은 수량과 다르게 매진된 상태라면 다른 동료가 헛걸음 하지 않게 매진 처리해주세요!'
+    });
+
+    confirmPopup.then(function(res) {
+      if(res) {
+        console.log('확인');
+        BreakfastSvc.soldout()
+          .then(function(response) {
+            breakfast.status = response.data;
+          });
+      } else {
+        console.log('취소');
+      }
+    });
+  };
+
 
   breakfast.refresh();
 });

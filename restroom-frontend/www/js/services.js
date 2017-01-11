@@ -16,6 +16,11 @@ module.service('BreakfastSvc', function($http, $log) {
     $log.info('>> BreakfastSvc#getStatus');
     return $http.get(breakfastUrl + '/status');
   };
+
+  svc.soldout = function() {
+    $log.info('>> BreakfastSvc#soldout');
+    return $http.get(breakfastUrl + '/soldout');
+  };
 });
 
 module.service('MainSvc', function($http, $log) {

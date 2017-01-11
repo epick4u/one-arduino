@@ -8,10 +8,14 @@
       </div>-->
       <div class="row">
         <div class="col8" style="">
-          <h3><b>남은 수량 : 빵 {{breakfast.status.breadLeftCount}} / 밥  {{breakfast.status.riceLeftCount}}</b></h3>
+          <h3>
+            <b ng-hide="breakfast.status.soldout">남은 수량 : 빵 {{breakfast.status.breadLeftCount}} / 밥  {{breakfast.status.riceLeftCount}}</b>
+            <b ng-show="breakfast.status.soldout">남은 수량 : 매진</b>
+          </h3>
           <h5> (Last updated : {{breakfast.status.date | date:'yyyy-MM-dd HH:mm:ss'}}) </h5>
         </div>
         <div class="col text-right">
+          <button class="button button-positive" ng-click="breakfast.showConfirm()" ng-hide="breakfast.status.soldout">아무것도 없나요?</button>
           <button class="button button-positive icon ion-refresh" ng-click="breakfast.refresh()"></button>
         </div>
       </div>
