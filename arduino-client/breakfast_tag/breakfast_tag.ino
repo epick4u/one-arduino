@@ -1,3 +1,4 @@
+
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <SPI.h>
@@ -24,7 +25,7 @@ const char* server_url = "http://52.78.61.81:8080/breakfast/recipient/bread/";
 #define SS_PIN  2  // SDA-PIN RC522 - RFID - SPI - Modul GPIO2
 #define SPK_PIN 5  // GPIO5//D1
 #define LED_LEFT 4  // GPIO4//D2
-#define LED_RIGHT 0  // GPIO4//D3
+#define LED_RIGHT 0  // GPIO0//D3
 
 const char *ssid =  "ONE-GUEST";     // change according to your Network - cannot be longer than 32 characters!
 //const char *pass =  "yourPASSWORD"; // change according to your Network
@@ -77,7 +78,7 @@ void loop()
   // INIT
   digitalWrite(LED_RIGHT, LOW);//LED OFF
   digitalWrite(LED_LEFT, LOW);//LED OFF
-  digitalWrite(SPK_PIN, LOW);//SPEAKER OFF
+  digitalWrite(SPK_PIN, HIGH);//SPEAKER OFF
   
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
