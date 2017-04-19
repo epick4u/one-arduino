@@ -51,6 +51,10 @@ void setup()
     //SENSOR
     pinMode(TRIG_BTM, OUTPUT);
     pinMode(ECHO_BTM, INPUT);
+    pinMode(TRIG_LFT, OUTPUT);
+    pinMode(ECHO_LFT, INPUT);
+    pinMode(TRIG_RGT, OUTPUT);
+    pinMode(ECHO_RGT, INPUT);
 }
 
 void loop() 
