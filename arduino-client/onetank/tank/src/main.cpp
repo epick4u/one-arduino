@@ -14,6 +14,7 @@ UNO - ATMega328-compatibles
 #define MOT_SPD_MAX 250
 #define MOT_DLY_MAX 10
 
+#define DBG_STR     1 
 //MOTOR
 #define MOT_LFT	    6      // MOTOR A - PIN 11 POWER 
 #define DIR_LFT     7      // MOTOR A - PIN 7  DIRECTION 
@@ -21,7 +22,7 @@ UNO - ATMega328-compatibles
 #define DIR_RGT     12     // MOTOR B - PIN 12 DIRECTION 
 
 //SENSOR
-/// 초음파 센서
+/// 초음파 센서 HC-SR04
 #define TRIG_RGT    2
 #define ECHO_RGT    3
 #define TRIG_LFT    4
@@ -30,7 +31,7 @@ UNO - ATMega328-compatibles
 #define ECHO_BTM    9
 #define UNSET       -1
 
-#define LIMIT_FRONT     25  // CM
+#define LIMIT_FRONT     30  // CM
 #define LIMIT_BOTTOM    14  // CM
 
 void setup();
@@ -41,6 +42,8 @@ void go();
 void echo_btm();
 void echo_lft();
 void echo_rgt();
+void dbg(const char * msg);
+//void echo();
 
 void turn_rgt();
 void move_back();
@@ -50,8 +53,8 @@ int MOT_SPD_LFT = MOT_SPD_MAX;  // MOROT SPEED LEFT
 int MOT_SPD_RGT = MOT_SPD_MAX;  // MOROT SPEED RIGHT
 
 volatile int stat_btm = LOW;    // DIRECTION STAT BOTTOM
-volatile int stat_lft = LOW;    // DIRECTION STAT LEFT
-volatile int stat_rgt = LOW;    // DIRECTION STAT RIGHT
+volatile int stat_lft = LOW;    // BLOCK STAT LEFT
+volatile int stat_rgt = LOW;    // BLOCK STAT RIGHT
 
 volatile int angle_rotate = 0;  // ROTATTION angle to LEFT
 
@@ -104,6 +107,45 @@ void loop()
     go();
 }
 
+/* multiple pulse in not working example...
+ * no working code !!
+void echo()
+{
+    digitalWrite(TRIG_BTM, LOW);
+    digitalWrite(TRIG_LFT, LOW);
+    digitalWrite(TRIG_RGT, LOW);
+    delay(1);   //min 5us delayMicroseconds(5);
+    digitalWrite(TRIG_BTM, HIGH);
+    digitalWrite(TRIG_LFT, HIGH);
+    digitalWrite(TRIG_RGT, HIGH);
+    delay(1);   //min 10us delayMicroseconds(5);
+    digitalWrite(TRIG_BTM, LOW);
+    digitalWrite(TRIG_LFT, LOW);
+    digitalWrite(TRIG_RGT, LOW);
+
+    dist_btm = UNSET;
+    echo_btm_dur = pulseIn(ECHO_BTM, HIGH);
+    dist_btm = ((float)(346 * echo_btm_dur) / 10000) / 2;
+    stat_btm = (dist_btm < LIMIT_BOTTOM);
+    Serial.print(dist_btm); 
+    //Serial.println(" BOTTOM\n");
+
+    dist_lft = UNSET;
+    echo_lft_dur = pulseIn(ECHO_LFT, HIGH);
+    dist_lft = ((float)(346 * echo_lft_dur) / 10000) / 2;
+    stat_lft = (dist_lft < LIMIT_FRONT);
+    Serial.print(dist_lft); 
+    Serial.println(" LEFT \n");
+
+    dist_rgt = UNSET;
+    echo_rgt_dur = pulseIn(ECHO_RGT, HIGH);
+    dist_rgt = ((float)(346 * echo_rgt_dur) / 10000) / 2;
+    stat_rgt = (dist_rgt < LIMIT_FRONT);
+    Serial.print(dist_rgt); 
+    Serial.println(" RIGHT \n");
+}
+*/
+
 void echo_btm()
 {
     switch (digitalRead(ECHO_BTM))
@@ -119,7 +161,8 @@ void echo_btm()
             echo_btm_dur = echo_btm_end - echo_btm_beg;
             dist_btm = ((float)(346 * echo_btm_dur) / 10000) / 2;
             stat_btm = (dist_btm < LIMIT_BOTTOM);
-            //Serial.print(dist_btm); Serial.println(" BOTTOM\n");
+            //Serial.print(dist_btm); 
+            //Serial.println(" \tBOTTOM\n");
             break;
     }
 }
@@ -139,6 +182,8 @@ void echo_lft()
             dist_lft = ((float)(346 * echo_lft_dur) / 10000) / 2;
             stat_lft = (dist_lft < LIMIT_FRONT);
             angle_rotate = dist_lft - dist_rgt;
+            //Serial.print(dist_lft); 
+            //Serial.println(" \tLEFT\n");
             break;
     }
 }
@@ -158,21 +203,27 @@ void echo_rgt()
             dist_rgt = ((float)(346 * echo_rgt_dur) / 10000) / 2;
             stat_rgt = (dist_rgt < LIMIT_FRONT);
             angle_rotate = dist_lft - dist_rgt;
+            //Serial.print(dist_rgt); 
+            //Serial.println(" \tRIGHT\n");
             break;
     }
 }
 
 void sensor_dist()
 {
+    //LOW>HIGH>LOW
     //float duration, distance;
-    digitalWrite(TRIG_BTM, HIGH);
-    digitalWrite(TRIG_LFT, HIGH);
-    digitalWrite(TRIG_RGT, HIGH);
-    delay(1);   //min 5us delayMicroseconds(5);
     digitalWrite(TRIG_BTM, LOW);
     digitalWrite(TRIG_LFT, LOW);
     digitalWrite(TRIG_RGT, LOW);
-
+    delay(1);   //min 5us delayMicroseconds(5);
+    digitalWrite(TRIG_BTM, HIGH);
+    digitalWrite(TRIG_LFT, HIGH);
+    digitalWrite(TRIG_RGT, HIGH);
+    delay(1);   //min 10us delayMicroseconds(5);
+    digitalWrite(TRIG_BTM, LOW);
+    digitalWrite(TRIG_LFT, LOW);
+    digitalWrite(TRIG_RGT, LOW);
     // ECHO_BTM 이 HIGH를 유지한 시간/2 T=실온25도 가정
     // v * s = (331.5 + 0.60714*T) x t / 2 = 347 * t / 2
     // UNIT : cm, us = 100 /1000000
@@ -209,30 +260,31 @@ void direction()
         //BOTTOM EMPTY & BACKWARD
         digitalWrite(DIR_LFT, LOW);
         digitalWrite(DIR_RGT, HIGH);
-        //Serial.println(" BOTTOM EMPTY & BACKWARD\n");
+        dbg(" \tBOTTOM EMPTY & BACKWARD\n");
         MOT_DELAY = MOT_DLY_MAX*100;//1 SEC BACK & TURN
-        move_back();//100ms back
-        turn_rgt();//100ms turn
+        //move_back();//100ms back
+        //turn_rgt();//100ms turn
         return;//Immediate move
     }
 
     //BOTH BLOCK! rotate to longer distance 
     //HIGH = BLOCK, LOW = OPEN
     if ( stat_lft &&  stat_rgt ) {
+
         if ( angle_rotate > 0 ) {
             //RIGHT BLOCK & ROTATE TO LEFT
             digitalWrite(DIR_LFT, HIGH);
             digitalWrite(DIR_RGT, HIGH);
             MOT_SPD_LFT = MOT_SPD_MAX*0.8;
             MOT_SPD_RGT = MOT_SPD_MAX*0.6;
-            //Serial.println(" BOTH BLOCK & ROTATE TO LEFT\n");
-        }else {
+            dbg(" \tBOTH BLOCK & L ROTATE\n");
+        } else {
             //LEFT BLOCK & ROTATE TO RIGHT
             digitalWrite(DIR_LFT, LOW);
             digitalWrite(DIR_RGT, LOW);
             MOT_SPD_LFT = MOT_SPD_MAX*0.6;
             MOT_SPD_RGT = MOT_SPD_MAX*0.8;
-            //Serial.println(" BOTH BLOCK & ROTATE TO RIGHT\n");
+            dbg(" \tBOTH BLOCK &  R ROTATE\n");
         }
         return;
     }
@@ -244,15 +296,17 @@ void direction()
         digitalWrite(DIR_RGT, LOW);
         MOT_SPD_LFT = MOT_SPD_MAX*0.6;
         MOT_SPD_RGT = MOT_SPD_MAX*0.8;
-        //Serial.println(" LEFT BLOCK\n");
+        dbg(" \tLEFT BLOCK & R ROTATE\n");
         return;
-    } else if (stat_rgt) {     
+    } 
+
+    if (stat_rgt) {     
         //RIGHT BLOCK & ROTATE TO LEFT
         digitalWrite(DIR_LFT, HIGH);
         digitalWrite(DIR_RGT, HIGH);
         MOT_SPD_LFT = MOT_SPD_MAX*0.8;
         MOT_SPD_RGT = MOT_SPD_MAX*0.6;
-        //Serial.println(" RIGHT BLOCK\n");
+        dbg(" \tRIGHT BLOCK & L ROTATE\n");
         return;
     }
 
@@ -260,7 +314,7 @@ void direction()
         //BOTTOM OK & FORWARD
         digitalWrite(DIR_LFT, HIGH);
         digitalWrite(DIR_RGT, LOW);
-        //Serial.println(" BOTTOM OK & FORWARD\n");
+        //dbg(" BOTTOM OK & FORWARD\n");
     } 
 
 }
@@ -292,7 +346,6 @@ void move_back()
     analogWrite(MOT_LFT, MOT_SPD_LFT);
     analogWrite(MOT_RGT, MOT_SPD_RGT);
     delay(MOT_DELAY);
-    //Serial.println(" TURN RIGHT\n");
 }
 
 void turn_rgt()
@@ -306,5 +359,17 @@ void turn_rgt()
     analogWrite(MOT_LFT, MOT_SPD_LFT);
     analogWrite(MOT_RGT, MOT_SPD_RGT);
     delay(MOT_DELAY);
-    //Serial.println(" TURN RIGHT\n");
+}
+
+void dbg(const char * msg)
+{
+    if (DBG_STR)
+    {
+        Serial.print("\tB ");Serial.print(dist_btm); 
+        Serial.print("\tL ");Serial.print(dist_lft); 
+        Serial.print("\tR ");Serial.print(dist_rgt); 
+        Serial.print("\tA \t");Serial.print(angle_rotate); 
+        Serial.println(msg);
+    }
+
 }
