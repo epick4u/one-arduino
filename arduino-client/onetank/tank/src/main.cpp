@@ -103,48 +103,14 @@ void setup()
 void loop() 
 {
     sensor_dist();
+    //STOP WHEN NO SENSOR ERROR
+    if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET )
+        return;
     direction();
+    delay(10);//dummy
     go();
 }
 
-/* multiple pulse in not working example...
- * no working code !!
-void echo()
-{
-    digitalWrite(TRIG_BTM, LOW);
-    digitalWrite(TRIG_LFT, LOW);
-    digitalWrite(TRIG_RGT, LOW);
-    delay(1);   //min 5us delayMicroseconds(5);
-    digitalWrite(TRIG_BTM, HIGH);
-    digitalWrite(TRIG_LFT, HIGH);
-    digitalWrite(TRIG_RGT, HIGH);
-    delay(1);   //min 10us delayMicroseconds(5);
-    digitalWrite(TRIG_BTM, LOW);
-    digitalWrite(TRIG_LFT, LOW);
-    digitalWrite(TRIG_RGT, LOW);
-
-    dist_btm = UNSET;
-    echo_btm_dur = pulseIn(ECHO_BTM, HIGH);
-    dist_btm = ((float)(346 * echo_btm_dur) / 10000) / 2;
-    stat_btm = (dist_btm < LIMIT_BOTTOM);
-    Serial.print(dist_btm); 
-    //Serial.println(" BOTTOM\n");
-
-    dist_lft = UNSET;
-    echo_lft_dur = pulseIn(ECHO_LFT, HIGH);
-    dist_lft = ((float)(346 * echo_lft_dur) / 10000) / 2;
-    stat_lft = (dist_lft < LIMIT_FRONT);
-    Serial.print(dist_lft); 
-    Serial.println(" LEFT \n");
-
-    dist_rgt = UNSET;
-    echo_rgt_dur = pulseIn(ECHO_RGT, HIGH);
-    dist_rgt = ((float)(346 * echo_rgt_dur) / 10000) / 2;
-    stat_rgt = (dist_rgt < LIMIT_FRONT);
-    Serial.print(dist_rgt); 
-    Serial.println(" RIGHT \n");
-}
-*/
 
 void echo_btm()
 {
@@ -161,8 +127,6 @@ void echo_btm()
             echo_btm_dur = echo_btm_end - echo_btm_beg;
             dist_btm = ((float)(346 * echo_btm_dur) / 10000) / 2;
             stat_btm = (dist_btm < LIMIT_BOTTOM);
-            //Serial.print(dist_btm); 
-            //Serial.println(" \tBOTTOM\n");
             break;
     }
 }
@@ -182,8 +146,6 @@ void echo_lft()
             dist_lft = ((float)(346 * echo_lft_dur) / 10000) / 2;
             stat_lft = (dist_lft < LIMIT_FRONT);
             angle_rotate = dist_lft - dist_rgt;
-            //Serial.print(dist_lft); 
-            //Serial.println(" \tLEFT\n");
             break;
     }
 }
@@ -203,8 +165,6 @@ void echo_rgt()
             dist_rgt = ((float)(346 * echo_rgt_dur) / 10000) / 2;
             stat_rgt = (dist_rgt < LIMIT_FRONT);
             angle_rotate = dist_lft - dist_rgt;
-            //Serial.print(dist_rgt); 
-            //Serial.println(" \tRIGHT\n");
             break;
     }
 }
@@ -224,51 +184,28 @@ void sensor_dist()
     digitalWrite(TRIG_BTM, LOW);
     digitalWrite(TRIG_LFT, LOW);
     digitalWrite(TRIG_RGT, LOW);
-    // ECHO_BTM 이 HIGH를 유지한 시간/2 T=실온25도 가정
-    // v * s = (331.5 + 0.60714*T) x t / 2 = 347 * t / 2
-    // UNIT : cm, us = 100 /1000000
-    // FRONT : BACK
-
-    /**
-      duration = pulseIn(ECHO_BTM, HIGH);
-      distance = ((float)(346 * duration) / 10000) / 2;
-      distance < 15 ? stat_btm = LOW : stat_btm = HIGH; 
-      dist_btm = distance;
-     */
 }
 
 void direction()
 {
-    //STOP WHEN NO SENSOR ERROR
-    if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET )
-        return;
-
-    //Serial.print("\tBTM: ");
-    //Serial.print(dist_btm);
-    //Serial.print("\tLFT: ");
-    //Serial.print(dist_lft);
-    //Serial.print("\tRGT: ");
-    //Serial.print(dist_rgt);
-    //Serial.print("\n");
-
     //INIT SPEED
     MOT_SPD_LFT = MOT_SPD_RGT = MOT_SPD_MAX;
     MOT_DELAY = MOT_DLY_MAX;
-
     //PRIORITY BOTTOM-BACK > BLOCK-ROTATE
+
+    // 역주행 : 180-angle
     if (!stat_btm) {            
         //BOTTOM EMPTY & BACKWARD
         digitalWrite(DIR_LFT, LOW);
         digitalWrite(DIR_RGT, HIGH);
         dbg(" \tBOTTOM EMPTY & BACKWARD\n");
-        MOT_DELAY = MOT_DLY_MAX*100;//1 SEC BACK & TURN
+        MOT_DELAY = MOT_DLY_MAX*100;//1 SEC BACK
         //move_back();//100ms back
         //turn_rgt();//100ms turn
         return;//Immediate move
     }
 
-    //BOTH BLOCK! rotate to longer distance 
-    //HIGH = BLOCK, LOW = OPEN
+    // TODO : 반사주행 : 180-angle
     if ( stat_lft &&  stat_rgt ) {
 
         if ( angle_rotate > 0 ) {
@@ -277,6 +214,7 @@ void direction()
             digitalWrite(DIR_RGT, HIGH);
             MOT_SPD_LFT = MOT_SPD_MAX*0.8;
             MOT_SPD_RGT = MOT_SPD_MAX*0.6;
+            MOT_DELAY = MOT_DLY_MAX*angle_rotate*4;//LONG TURN
             dbg(" \tBOTH BLOCK & L ROTATE\n");
         } else {
             //LEFT BLOCK & ROTATE TO RIGHT
@@ -284,28 +222,31 @@ void direction()
             digitalWrite(DIR_RGT, LOW);
             MOT_SPD_LFT = MOT_SPD_MAX*0.6;
             MOT_SPD_RGT = MOT_SPD_MAX*0.8;
-            dbg(" \tBOTH BLOCK &  R ROTATE\n");
+            MOT_DELAY = MOT_DLY_MAX*angle_rotate*-4;//LONG TURN
+            dbg(" \tBOTH BLOCK & R ROTATE\n");
         }
         return;
     }
 
-    //TODO: diff lft-rgt and decide
+    // TODO 평행주행 : 90-angle
+    // turn to longer distance, HIGH = BLOCK, LOW = OPEN
     if (stat_lft) {
         //LEFT BLOCK & ROTATE TO RIGHT
         digitalWrite(DIR_LFT, LOW);
         digitalWrite(DIR_RGT, LOW);
         MOT_SPD_LFT = MOT_SPD_MAX*0.6;
         MOT_SPD_RGT = MOT_SPD_MAX*0.8;
+        MOT_DELAY = MOT_DLY_MAX*4;//TURN
         dbg(" \tLEFT BLOCK & R ROTATE\n");
         return;
     } 
-
     if (stat_rgt) {     
         //RIGHT BLOCK & ROTATE TO LEFT
         digitalWrite(DIR_LFT, HIGH);
         digitalWrite(DIR_RGT, HIGH);
         MOT_SPD_LFT = MOT_SPD_MAX*0.8;
         MOT_SPD_RGT = MOT_SPD_MAX*0.6;
+        MOT_DELAY = MOT_DLY_MAX*4;//TURN
         dbg(" \tRIGHT BLOCK & L ROTATE\n");
         return;
     }
@@ -331,13 +272,15 @@ void go()
 
     analogWrite(MOT_LFT, MOT_SPD_LFT);
     analogWrite(MOT_RGT, MOT_SPD_RGT);
-    if ( (stat_lft || stat_rgt) 
-    && (angle_rotate < LIMIT_FRONT && angle_rotate > -1*LIMIT_FRONT) 
-    && (stat_btm > 0)
-    ) 
-    {  
-        ( angle_rotate > 0 ) ? delay(angle_rotate*2) : delay(angle_rotate*-2);
-    }
+    /**
+      if ( (stat_lft || stat_rgt) 
+      && (angle_rotate < LIMIT_FRONT && angle_rotate > -1*LIMIT_FRONT) 
+      && (stat_btm > 0)
+      ) 
+      {  
+      ( angle_rotate > 0 ) ? delay(angle_rotate*2) : delay(angle_rotate*-2);
+      }
+     */
     delay(MOT_DELAY);
 }
 
@@ -373,3 +316,47 @@ void dbg(const char * msg)
     }
 
 }
+
+/* multiple pulse in not working example...
+ * no working code !!
+
+// ECHO_BTM 이 HIGH를 유지한 시간/2 T=실온25도 가정
+// v * s = (331.5 + 0.60714*T) x t / 2 = 347 * t / 2
+// UNIT : cm, us = 100 /1000000
+
+void echo()
+{
+digitalWrite(TRIG_BTM, LOW);
+digitalWrite(TRIG_LFT, LOW);
+digitalWrite(TRIG_RGT, LOW);
+delay(1);   //min 5us delayMicroseconds(5);
+digitalWrite(TRIG_BTM, HIGH);
+digitalWrite(TRIG_LFT, HIGH);
+digitalWrite(TRIG_RGT, HIGH);
+delay(1);   //min 10us delayMicroseconds(5);
+digitalWrite(TRIG_BTM, LOW);
+digitalWrite(TRIG_LFT, LOW);
+digitalWrite(TRIG_RGT, LOW);
+
+dist_btm = UNSET;
+echo_btm_dur = pulseIn(ECHO_BTM, HIGH);
+dist_btm = ((float)(346 * echo_btm_dur) / 10000) / 2;
+stat_btm = (dist_btm < LIMIT_BOTTOM);
+Serial.print(dist_btm); 
+//Serial.println(" BOTTOM\n");
+
+dist_lft = UNSET;
+echo_lft_dur = pulseIn(ECHO_LFT, HIGH);
+dist_lft = ((float)(346 * echo_lft_dur) / 10000) / 2;
+stat_lft = (dist_lft < LIMIT_FRONT);
+Serial.print(dist_lft); 
+Serial.println(" LEFT \n");
+
+dist_rgt = UNSET;
+echo_rgt_dur = pulseIn(ECHO_RGT, HIGH);
+dist_rgt = ((float)(346 * echo_rgt_dur) / 10000) / 2;
+stat_rgt = (dist_rgt < LIMIT_FRONT);
+Serial.print(dist_rgt); 
+Serial.println(" RIGHT \n");
+}
+ */
