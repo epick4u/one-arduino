@@ -6,8 +6,10 @@ http://playground.arduino.cc/Main/AdafruitMotorShield
 http://homediyelectronics.com/projects/arduino/arduinoprogramminghcsr04withinterrupts/?p=4
 
 UNO - ATMega328-compatibles
+ESP - esp8266 nodemcu
+
+https://nodemcu.readthedocs.io/en/master/en/modules/gpio/
  */
-#define MYESP 1
 #include "Arduino.h"
 
 #define MOT_SPD_MAX 250
@@ -27,28 +29,19 @@ UNO - ATMega328-compatibles
 #define LIMIT_DIST      12.0  // CM distance b/w left&right 
 
 //BOARD SPECIFIC
-#ifdef MYESP
-#define TRIG_RGT    0
-#define ECHO_RGT    2
-#define TRIG_LFT    1
-#define ECHO_LFT    3
-
-#define TRIG_BTM    4
-#define ECHO_BTM    5
-
-#else
-/// 초음파 센서 HC-SR04
+// 초음파 센서 HC-SR04
+// GPIO pin, except GPIO16
 #define TRIG_RGT    4
 #define ECHO_RGT    5
-#define TRIG_LFT    2
-#define ECHO_LFT    3
-#define TRIG_BTM    8
-#define ECHO_BTM    9
 
-#include <PinChangeInt.h>
-#endif
+#define TRIG_LFT    12//D6/G12
+#define ECHO_LFT    14//D5/G14
+#define TRIG_BTM    15//D8/G15
+#define ECHO_BTM    13//D7/G13
 
-void setup();
+#define LED_MCU     2//D4/G2
+
+void setup(void);
 void loop();
 void sensor_dist();
 void direction();
@@ -91,56 +84,49 @@ volatile long echo_rgt_dur = 0; // duration of echo pulse
 volatile int dist_rgt = UNSET;  // distance of echo pulse 
 
 
-void setup() 
+void setup(void) 
 {
     // MOTOR NO NEED TO SETUP ANALOG OUTPUT
+    /* TODO
     pinMode(DIR_LFT, OUTPUT);
     pinMode(DIR_RGT, OUTPUT);
     delay(1);
     digitalWrite(DIR_LFT, LOW);
     digitalWrite(DIR_RGT, HIGH);
+    */
+
+    //WIFI
+    pinMode(LED_MCU, OUTPUT);
 
     //SENSOR
     pinMode(TRIG_BTM, OUTPUT);
-    pinMode(TRIG_LFT, OUTPUT);
-    pinMode(TRIG_RGT, OUTPUT);
+    //pinMode(TRIG_LFT, OUTPUT);
+    //pinMode(TRIG_RGT, OUTPUT);
 
     //SETUP ISR
-#ifdef MYESP
     //the internal pullup resistor for input
     pinMode(ECHO_BTM, INPUT_PULLUP);
-    pinMode(ECHO_LFT, INPUT_PULLUP);
-    pinMode(ECHO_RGT, INPUT_PULLUP);
+    //pinMode(ECHO_LFT, INPUT_PULLUP);
+    //pinMode(ECHO_RGT, INPUT_PULLUP);
+
     attachInterrupt(digitalPinToInterrupt(ECHO_BTM), echo_btm, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ECHO_LFT), echo_lft, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ECHO_RGT), echo_rgt, CHANGE);
-#else
-    pinMode(ECHO_BTM, INPUT);
-    pinMode(ECHO_LFT, INPUT);
-    pinMode(ECHO_RGT, INPUT);
-    //digitalWrite(ECHO_BTM, HIGH);
-    //digitalWrite(ECHO_LFT, HIGH);
-    //digitalWrite(ECHO_RGT, HIGH);
-    PCintPort::attachInterrupt(ECHO_BTM, echo_btm, CHANGE); 
-    PCintPort::attachInterrupt(ECHO_LFT, echo_lft, CHANGE); 
-    PCintPort::attachInterrupt(ECHO_RGT, echo_rgt, CHANGE); 
-#endif
-    Serial.begin(115200);
+    //attachInterrupt(digitalPinToInterrupt(ECHO_LFT), echo_lft, CHANGE);
+    //attachInterrupt(digitalPinToInterrupt(ECHO_RGT), echo_rgt, CHANGE);
+    Serial.begin(9600);
 }
 
 void loop() 
 {
-    //sensor_dist();
+    sensor_dist();
     //STOP WHEN NO SENSOR ERROR
-    //if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET )
-    //return;
+    //if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET ) //return;
     //direction();
     //go();
 
     //TEST
-    dbg("HELLOOO");
-    delay(1000);
-
+    digitalWrite(LED_MCU, HIGH);  // Turn the LED off
+    dbg("ECHO");
+    delay(300);
     //stop(3000);
     //front();
     //stop(3000);
@@ -153,6 +139,7 @@ void loop()
     //turn(-90);
     //go();
     //stop(5000);
+    digitalWrite(LED_MCU, LOW);   // Turn the LED on
 }
 
 void echo_btm()
@@ -217,16 +204,16 @@ void sensor_dist()
     //LOW>HIGH>LOW
     //float duration, distance;
     digitalWrite(TRIG_BTM, LOW);
-    digitalWrite(TRIG_LFT, LOW);
-    digitalWrite(TRIG_RGT, LOW);
+    //digitalWrite(TRIG_LFT, LOW);
+    //digitalWrite(TRIG_RGT, LOW);
     delay(2);   //min 5us delayMicroseconds(5);
     digitalWrite(TRIG_BTM, HIGH);
-    digitalWrite(TRIG_LFT, HIGH);
-    digitalWrite(TRIG_RGT, HIGH);
+    //digitalWrite(TRIG_LFT, HIGH);
+    //digitalWrite(TRIG_RGT, HIGH);
     delay(2);   //min 10us delayMicroseconds(5);
     digitalWrite(TRIG_BTM, LOW);
-    digitalWrite(TRIG_LFT, LOW);
-    digitalWrite(TRIG_RGT, LOW);
+    //digitalWrite(TRIG_LFT, LOW);
+    //digitalWrite(TRIG_RGT, LOW);
 }
 
 void direction()
@@ -382,12 +369,12 @@ void dbg(const char * msg)
 {
 
 #ifdef DEBUG_MODE
-    Serial.print("\tB ");Serial.print(dist_btm); 
-    Serial.print("\tL ");Serial.print(dist_lft); 
-    Serial.print("\tR ");Serial.print(dist_rgt); 
-    Serial.print("\tA ");Serial.print(angle_dst); 
-    Serial.print("\tT ");Serial.print(angle_rot); 
-    Serial.print("D ");Serial.print(MOT_DELAY); 
+    Serial.printf("\tB %d ",dist_btm);
+    //Serial.print("\tL ");Serial.print(dist_lft); 
+    //Serial.print("\tR ");Serial.print(dist_rgt); 
+    //Serial.print("\tA ");Serial.print(angle_dst); 
+    //Serial.print("\tT ");Serial.print(angle_rot); 
+    //Serial.print("D ");Serial.print(MOT_DELAY); 
     Serial.println(msg);
 #endif
 }
