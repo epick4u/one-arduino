@@ -12,7 +12,22 @@ UNO - ATMega328-compatibles
 #define MOT_SPD_MAX 250
 #define MOT_DLY_MAX 10
 
-//#define DEBUG_MODE  0
+//#define DEBUG 1
+
+//#define DBG(msg) Serial.printf( "\tB %d\tL %d\tR %d\tA %d\tT %d\tD %f" , dist_btm, dist_lft, dist_rgt, angle_dst, angle_rot, MOT_DELAY, msg)
+#ifdef DEBUG 
+#define DBG(msg) {Serial.print("\tB ");Serial.print(dist_btm);\
+    Serial.print("\tL ");Serial.print(dist_lft);\
+    Serial.print("\tR ");Serial.print(dist_rgt);\
+    Serial.print("\tA ");Serial.print(angle_dst);\
+    Serial.print("\tT ");Serial.print(angle_rot);\
+    Serial.print("D ");Serial.print(MOT_DELAY);\
+    Serial.println(msg);\
+}
+#else
+#define DBG
+#endif
+
 //MOTOR
 #define MOT_LFT	    6      // MOTOR A - PIN 11 POWER 
 #define DIR_LFT     7      // MOTOR A - PIN 7  DIRECTION 
@@ -22,7 +37,7 @@ UNO - ATMega328-compatibles
 #define UNSET       -1
 
 #define LIMIT_FRONT     30  // CM
-#define LIMIT_BOTTOM    15  // CM
+#define LIMIT_BOTTOM    14  // CM
 #define LIMIT_DIST      12.0  // CM distance b/w left&right 
 
 //BOARD SPECIFIC
@@ -45,8 +60,7 @@ void stop(int dummy);
 void echo_btm();
 void echo_lft();
 void echo_rgt();
-void dbg(const char * msg);
-//void echo();
+//void dbg(const char * msg);
 
 void turn(int theta);
 void front();
@@ -78,7 +92,6 @@ volatile long echo_rgt_end = 0; // end of echo pulse
 volatile long echo_rgt_dur = 0; // duration of echo pulse 
 volatile int dist_rgt = UNSET;  // distance of echo pulse 
 
-
 void setup() 
 {
     // MOTOR NO NEED TO SETUP ANALOG OUTPUT
@@ -94,12 +107,10 @@ void setup()
     pinMode(TRIG_RGT, OUTPUT);
 
     //SETUP ISR
-    pinMode(ECHO_BTM, INPUT);
-    pinMode(ECHO_LFT, INPUT);
-    pinMode(ECHO_RGT, INPUT);
-    //digitalWrite(ECHO_BTM, HIGH);
-    //digitalWrite(ECHO_LFT, HIGH);
-    //digitalWrite(ECHO_RGT, HIGH);
+    pinMode(ECHO_BTM, INPUT_PULLUP);
+    pinMode(ECHO_LFT, INPUT_PULLUP);
+    pinMode(ECHO_RGT, INPUT_PULLUP);
+
     PCintPort::attachInterrupt(ECHO_BTM, echo_btm, CHANGE); 
     PCintPort::attachInterrupt(ECHO_LFT, echo_lft, CHANGE); 
     PCintPort::attachInterrupt(ECHO_RGT, echo_rgt, CHANGE); 
@@ -109,14 +120,16 @@ void setup()
 void loop() 
 {
     sensor_dist();
-    //STOP WHEN NO SENSOR ERROR
-    if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET )
+    //STOP WHEN NO SENSOR ERROR //INTERRUPT Defense ifelse
+    if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET ) {
         return;
-    direction();
-    go();
+    } else {
+        direction();
+        go();
+    }
 
     //TEST
-    //dbg("HELLOOO");
+    //DBG("HELLOOO");
     //delay(1000);
 
     //stop(3000);
@@ -147,7 +160,7 @@ void echo_btm()
             echo_btm_end = micros();                  
             echo_btm_dur = echo_btm_end - echo_btm_beg;
             dist_btm = ((float)(346 * echo_btm_dur) / 10000) / 2;
-            stat_btm = (dist_btm < LIMIT_BOTTOM);
+            stat_btm = (dist_btm > LIMIT_BOTTOM);
             break;
     }
 }
@@ -192,7 +205,6 @@ void echo_rgt() {
 void sensor_dist()
 {
     //LOW>HIGH>LOW
-    //float duration, distance;
     digitalWrite(TRIG_BTM, LOW);
     digitalWrite(TRIG_LFT, LOW);
     digitalWrite(TRIG_RGT, LOW);
@@ -211,25 +223,24 @@ void direction()
     //INIT SPEED
     MOT_SPD_LFT = MOT_SPD_RGT = MOT_SPD_MAX;
     MOT_DELAY = MOT_DLY_MAX;
-    //PRIORITY BOTTOM-BACK > BLOCK-ROTATE
     angle_rot = 0;//Rotation 0
+
+    //PRIORITY 역주행 > 회전
     // 역주행
-    if (stat_btm <= 0) {            
+    if ( stat_btm > 0 ) {            
         //BOTTOM EMPTY & BACKWARD
         digitalWrite(DIR_LFT, HIGH);
         digitalWrite(DIR_RGT, LOW);
-        dbg(" \tBOTTOM EMPTY & BACKWARD\n");
+        DBG(" BOTTOM EMPTY & BACKWARD");
         MOT_DELAY = MOT_DLY_MAX*120;//1 SEC BACK RIGHT TURN
         MOT_SPD_LFT = MOT_SPD_MAX*0.8;
         MOT_SPD_RGT = MOT_SPD_MAX*0.2;
-        //back();//100ms back
-        //turn_rgt();//100ms turn
         return;//Immediate move
     }
 
     angle_rot = atan(angle_dst/LIMIT_DIST)*180.0/M_PI;
     // TODO : 반사주행 : 180-2*angle = 2*(90-theta)
-    if ( stat_lft>0 && stat_rgt>0 ) {
+    if ( stat_lft > 0 && stat_rgt > 0 ) {
         angle_rot > 0 ? turn(180-2*angle_rot) : turn(-1*(180+2*angle_rot));
         return;
     }
@@ -237,21 +248,21 @@ void direction()
     // TODO 평행주행 : 90-angle
     // turn to longer distance, HIGH = BLOCK, LOW = OPEN
     //angle_rot > 0 ? turn(angle_dst,90-angle_rot) : turn(angle_dst,90+angle_rot);
-    if (stat_lft>0) {
+    if ( stat_lft > 0 ) {
         turn(-20);
         return;
     }
 
-    if (stat_rgt>0) {
+    if ( stat_rgt > 0 ) {
         turn(20);
         return;
     }
 
-    if (stat_btm) {
+    if ( stat_btm == 0 ) {
         //BOTTOM OK & FORWARD
         digitalWrite(DIR_LFT, LOW);
         digitalWrite(DIR_RGT, HIGH);
-        //dbg(" \tFORWARD\n");
+        //DBG(" \tFORWARD\n");
     } 
 
 }
@@ -270,7 +281,7 @@ void go()
     //analogWrite(MOT_LFT, pos);
     //analogWrite(MOT_RGT, pos);
 
-#ifndef DEBUG_MODE
+#ifndef DEBUG
     analogWrite(MOT_LFT, MOT_SPD_LFT);
     analogWrite(MOT_RGT, MOT_SPD_RGT);
 #endif
@@ -300,20 +311,19 @@ void back()
 //theta 0~360
 void turn(int theta)
 {
-    if ( theta == 0 ) 
-    {
-        dbg(" \tTURN ZERO\n");
+    if ( theta == 0 ) {
+        DBG(" TURN ZERO");
         return;
     }
 
-    if ( theta > 0 ){
+    if ( theta > 0 ) {
         //TURN TO LEFT
         MOT_DELAY=theta*10;
         digitalWrite(DIR_LFT, HIGH);
         digitalWrite(DIR_RGT, HIGH);
         MOT_SPD_LFT = MOT_SPD_MAX*0.8;
         MOT_SPD_RGT = MOT_SPD_MAX*0.6;
-        dbg(" \tGO LEFT\n");
+        DBG(" GO LEFT");
     } else {
         //TURN TO RIGHT
         MOT_DELAY=theta*-10;
@@ -321,25 +331,25 @@ void turn(int theta)
         digitalWrite(DIR_RGT, LOW);
         MOT_SPD_LFT = MOT_SPD_MAX*0.6;
         MOT_SPD_RGT = MOT_SPD_MAX*0.8;
-        dbg(" \tGO RIGHT\n");
+        DBG(" GO RIGHT");
     }
 
     if ( MOT_DELAY > 3000 ) MOT_DELAY = 3000;
 }
-
-void dbg(const char * msg)
-{
-
+/*
+  void dbg(const char * msg)
+  {
 #ifdef DEBUG_MODE
-    Serial.print("\tB ");Serial.print(dist_btm); 
-    Serial.print("\tL ");Serial.print(dist_lft); 
-    Serial.print("\tR ");Serial.print(dist_rgt); 
-    Serial.print("\tA ");Serial.print(angle_dst); 
-    Serial.print("\tT ");Serial.print(angle_rot); 
-    Serial.print("D ");Serial.print(MOT_DELAY); 
-    Serial.println(msg);
+Serial.print("\tB ");Serial.print(dist_btm); 
+Serial.print("\tL ");Serial.print(dist_lft); 
+Serial.print("\tR ");Serial.print(dist_rgt); 
+Serial.print("\tA ");Serial.print(angle_dst); 
+Serial.print("\tT ");Serial.print(angle_rot); 
+Serial.print("D ");Serial.print(MOT_DELAY); 
+Serial.println(msg);
 #endif
 }
+ */
 
 /* multiple pulse in not working example...
  * no working code !!
