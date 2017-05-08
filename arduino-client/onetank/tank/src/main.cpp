@@ -7,36 +7,25 @@ http://homediyelectronics.com/projects/arduino/arduinoprogramminghcsr04withinter
 
 UNO - ATMega328-compatibles
  */
-#define MYESP 1
 #include "Arduino.h"
 
 #define MOT_SPD_MAX 250
 #define MOT_DLY_MAX 10
 
-#define DEBUG_MODE  1
+//#define DEBUG_MODE  0
 //MOTOR
 #define MOT_LFT	    6      // MOTOR A - PIN 11 POWER 
 #define DIR_LFT     7      // MOTOR A - PIN 7  DIRECTION 
 #define MOT_RGT     11     // MOTOR B - PIN 6  POWER 
-#define DIR_RGT     13     // MOTOR B - PIN 12 DIRECTION 
+#define DIR_RGT     12     // MOTOR B - PIN 12 DIRECTION 
 
 #define UNSET       -1
 
 #define LIMIT_FRONT     30  // CM
-#define LIMIT_BOTTOM    13  // CM
+#define LIMIT_BOTTOM    15  // CM
 #define LIMIT_DIST      12.0  // CM distance b/w left&right 
 
 //BOARD SPECIFIC
-#ifdef MYESP
-#define TRIG_RGT    0
-#define ECHO_RGT    2
-#define TRIG_LFT    1
-#define ECHO_LFT    3
-
-#define TRIG_BTM    4
-#define ECHO_BTM    5
-
-#else
 /// 초음파 센서 HC-SR04
 #define TRIG_RGT    4
 #define ECHO_RGT    5
@@ -46,7 +35,6 @@ UNO - ATMega328-compatibles
 #define ECHO_BTM    9
 
 #include <PinChangeInt.h>
-#endif
 
 void setup();
 void loop();
@@ -106,15 +94,6 @@ void setup()
     pinMode(TRIG_RGT, OUTPUT);
 
     //SETUP ISR
-#ifdef MYESP
-    //the internal pullup resistor for input
-    pinMode(ECHO_BTM, INPUT_PULLUP);
-    pinMode(ECHO_LFT, INPUT_PULLUP);
-    pinMode(ECHO_RGT, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(ECHO_BTM), echo_btm, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ECHO_LFT), echo_lft, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ECHO_RGT), echo_rgt, CHANGE);
-#else
     pinMode(ECHO_BTM, INPUT);
     pinMode(ECHO_LFT, INPUT);
     pinMode(ECHO_RGT, INPUT);
@@ -124,22 +103,21 @@ void setup()
     PCintPort::attachInterrupt(ECHO_BTM, echo_btm, CHANGE); 
     PCintPort::attachInterrupt(ECHO_LFT, echo_lft, CHANGE); 
     PCintPort::attachInterrupt(ECHO_RGT, echo_rgt, CHANGE); 
-#endif
-    Serial.begin(115200);
+    Serial.begin(9600);
 }
 
 void loop() 
 {
-    //sensor_dist();
+    sensor_dist();
     //STOP WHEN NO SENSOR ERROR
-    //if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET )
-    //return;
-    //direction();
-    //go();
+    if ( stat_lft == UNSET || stat_rgt == UNSET || stat_btm == UNSET )
+        return;
+    direction();
+    go();
 
     //TEST
-    dbg("HELLOOO");
-    delay(1000);
+    //dbg("HELLOOO");
+    //delay(1000);
 
     //stop(3000);
     //front();
@@ -147,12 +125,12 @@ void loop()
     //back();
     //stop(3000);
 
-    //turn(90);
+    //turn(20);
     //go();
     //stop(3000);
-    //turn(-90);
+    //turn(-20);
     //go();
-    //stop(5000);
+    //stop(3000);
 }
 
 void echo_btm()
@@ -193,8 +171,7 @@ void echo_lft()
     }
 }
 
-void echo_rgt()
-{
+void echo_rgt() {
     switch (digitalRead(ECHO_RGT))
     {
         case HIGH:  //pulse begin
@@ -236,13 +213,15 @@ void direction()
     MOT_DELAY = MOT_DLY_MAX;
     //PRIORITY BOTTOM-BACK > BLOCK-ROTATE
     angle_rot = 0;//Rotation 0
-    // 역주행 : 180-angle
+    // 역주행
     if (stat_btm <= 0) {            
         //BOTTOM EMPTY & BACKWARD
         digitalWrite(DIR_LFT, HIGH);
         digitalWrite(DIR_RGT, LOW);
         dbg(" \tBOTTOM EMPTY & BACKWARD\n");
-        MOT_DELAY = MOT_DLY_MAX*100;//1 SEC BACK
+        MOT_DELAY = MOT_DLY_MAX*120;//1 SEC BACK RIGHT TURN
+        MOT_SPD_LFT = MOT_SPD_MAX*0.8;
+        MOT_SPD_RGT = MOT_SPD_MAX*0.2;
         //back();//100ms back
         //turn_rgt();//100ms turn
         return;//Immediate move
@@ -250,7 +229,7 @@ void direction()
 
     angle_rot = atan(angle_dst/LIMIT_DIST)*180.0/M_PI;
     // TODO : 반사주행 : 180-2*angle = 2*(90-theta)
-    if ( stat_lft>0 &&  stat_rgt>0 ) {
+    if ( stat_lft>0 && stat_rgt>0 ) {
         angle_rot > 0 ? turn(180-2*angle_rot) : turn(-1*(180+2*angle_rot));
         return;
     }
@@ -346,36 +325,6 @@ void turn(int theta)
     }
 
     if ( MOT_DELAY > 3000 ) MOT_DELAY = 3000;
-
-    /**
-      if ( angle_dst > 0 ) {
-    //RIGHT BLOCK & ROTATE TO LEFT
-    digitalWrite(DIR_LFT, HIGH);
-    digitalWrite(DIR_RGT, HIGH);
-    MOT_SPD_LFT = MOT_SPD_MAX*0.8;
-    MOT_SPD_RGT = MOT_SPD_MAX*0.6;
-    MOT_DELAY = MOT_DLY_MAX*angle_dst*4;//LONG TURN
-    dbg(" \tBOTH BLOCK & L ROTATE\n");
-    } else {
-    //LEFT BLOCK & ROTATE TO RIGHT
-    digitalWrite(DIR_LFT, LOW);
-    digitalWrite(DIR_RGT, LOW);
-    MOT_SPD_LFT = MOT_SPD_MAX*0.6;
-    MOT_SPD_RGT = MOT_SPD_MAX*0.8;
-    MOT_DELAY = MOT_DLY_MAX*angle_dst*-4;//LONG TURN
-    dbg(" \tBOTH BLOCK & R ROTATE\n");
-    }
-     */ 
-    /**
-      if ( (stat_lft || stat_rgt) 
-      && (angle_dst < LIMIT_FRONT && angle_dst > -1*LIMIT_FRONT) 
-      && (stat_btm > 0)
-      ) 
-      {  
-      ( angle_dst > 0 ) ? delay(angle_dst*2) : delay(angle_dst*-2);
-      }
-     */
-
 }
 
 void dbg(const char * msg)
