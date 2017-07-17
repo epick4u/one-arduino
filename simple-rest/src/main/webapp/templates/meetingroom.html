@@ -1,0 +1,21 @@
+<ion-view title="회의실 사용 현황" id="main">
+  <ion-content padding="true" class="has-header">
+    <div class="row">
+      <div class="col text-right">
+        <button class="button button-positive icon ion-refresh" ng-click="meetingroom.list()"></button>
+      </div>
+    </div>
+    <ion-list ng-repeat="floor in meetingroom.floors">
+      <ion-item class="item-divider"><strong>{{floor}}층</strong></ion-item>
+      <div class="button-bar">
+          <button ng-repeat="room in meetingroom.rooms | filter: {floor:floor} | orderBy:'floor'"
+            style="margin:10px 5px; border-radius:10px;"
+            class="button button-block icon-left"
+            ng-class="room.occupied ? 'button-assertive ion-locked' : 'button-balanced ion-unlocked'">
+              <strong>{{room.roomName}}</strong> <br />
+              <!--<strong>{{room.occupied ? 'OCCUPIED' : 'EMPTY'}}</strong>-->
+          </button>
+      </div>
+    </ion-list>
+  </ion-content>
+</ion-view>

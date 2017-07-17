@@ -1,0 +1,40 @@
+<ion-view title="조식 현황" id="breakfast" class=" ">
+  <ion-content padding="true" class="has-header">
+    <p id="about-markdown2" style="color:#000000;" class=" "></p>
+    <div class="list card " id="about-card21">
+      <!--
+      <div class=" item item-image">
+        <img src="img/breakfast.jpg" width="" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
+      </div>-->
+      <div class="row">
+        <div class="col8" style="">
+          <h3>
+            <b ng-hide="breakfast.status.soldout">남은 수량 : 빵 {{breakfast.status.breadLeftCount}} / 밥  {{breakfast.status.riceLeftCount}}</b>
+            <b ng-show="breakfast.status.soldout">남은 수량 : 매진</b>
+          </h3>
+          <h5> (Last updated : {{breakfast.status.date | date:'yyyy-MM-dd HH:mm:ss'}}) </h5>
+        </div>
+        <div class="col text-right">
+          <button class="button button-positive" ng-click="breakfast.showConfirm()" ng-hide="breakfast.status.soldout">아무것도 없나요?</button>
+          <button class="button button-positive icon ion-refresh" ng-click="breakfast.refresh()"></button>
+        </div>
+      </div>
+    </div>
+    <ion-list id="main-list5" class=" ">
+      <ion-item class="item-divider">조식 수령자 명단</ion-item>
+      <ion-item ng-repeat="recipient in breakfast.recipients" id="{{recipient.employee.cardId}}" class="item-thumbnail-left">
+          <img class="img" src="{{recipient.employee.nickName.imgUrl}}" style="display: inline;">
+          <span class="item-note">
+            {{recipient.menu == "bread" ? "빵" : "밥"}}
+          </span>
+          <span>
+            <h1 ng-show="$index < 3"><b>{{recipient.employee.nickName.nickName}}</b></h1>
+            <h2 ng-hide="$index < 3"><b>{{recipient.employee.nickName.nickName}}</b></h2>
+            <h2>{{recipient.receiptDate | date:'HH:mm'}}</h2>
+          </span>
+
+
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
