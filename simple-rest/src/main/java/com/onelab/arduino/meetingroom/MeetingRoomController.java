@@ -45,6 +45,7 @@ public class MeetingRoomController implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         roomMap = new HashMap<String, MeetingRoomVO>();
+        roomMap.put("manRoom", new MeetingRoomVO("manRoom","남자휴게실",13));
         roomMap.put("1", new MeetingRoomVO("1","meetingroom1",13));
         roomMap.put("2", new MeetingRoomVO("2","meetingroom2",13));
         roomMap.put("3", new MeetingRoomVO("3","meetingroom3",13));
